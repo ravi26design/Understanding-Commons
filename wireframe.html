@@ -239,6 +239,30 @@ main{min-height:60vh;padding-bottom:40px}
 .docview{min-height:520px;display:flex;flex-direction:column}
 .docview-body{flex:1;display:grid;place-items:center;color:var(--ink-3);padding:24px}
 .docview-ic{width:112px;height:112px;border:1px solid var(--line);border-radius:16px;display:grid;place-items:center;margin:0 auto 14px;color:var(--ink-3)}
+/* dummy document previews */
+.dpage{background:#fff;border:1px solid var(--line-2);border-radius:4px;box-shadow:0 10px 34px -18px rgba(0,0,0,.32);width:100%;max-width:520px;margin:0 auto;padding:36px 40px;text-align:left}
+.dpage-h{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.dpage-sub{font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:20px}
+.dpage-h2{font-size:13px;font-weight:700;color:var(--ink);margin:20px 0 10px}
+.dline{height:7px;background:var(--line-2);border-radius:2px;margin:8px 0}
+.dline.w95{width:95%}.dline.w90{width:90%}.dline.w85{width:85%}.dline.w80{width:80%}.dline.w70{width:70%}.dline.w60{width:60%}.dline.w50{width:50%}.dline.w40{width:40%}
+.dbul{display:flex;gap:9px;align-items:center;margin:8px 0}
+.dbul .b{width:5px;height:5px;border-radius:50%;background:var(--ink-3);flex:none}
+.dtable{width:100%;max-width:640px;margin:0 auto;border:1px solid var(--line-2);border-radius:6px;overflow:hidden;background:#fff}
+.dtable .tr{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;border-top:1px solid var(--line-2)}
+.dtable .tr:first-child{border-top:0}
+.dtable .tr.th{background:var(--ink)}
+.dtable .cell{padding:11px 12px;font-size:12px;border-left:1px solid var(--line-2);display:flex;align-items:center}
+.dtable .cell:first-child{border-left:0}
+.dtable .tr.th .cell{color:#fff;font-weight:600;border-left-color:rgba(255,255,255,.15)}
+.dvid{width:100%;max-width:640px;aspect-ratio:16/9;margin:0 auto;background:var(--ink);border-radius:8px;display:grid;place-items:center}
+.dplay{width:56px;height:56px;border-radius:50%;border:2px solid rgba(255,255,255,.85);color:#fff;display:grid;place-items:center;font-size:20px}
+.dimg{width:100%;max-width:640px;margin:0 auto;border:1px solid var(--line-2);border-radius:8px;overflow:hidden;background:#fff}
+.dimg-h{background:var(--panel-2);padding:14px 16px;text-align:center;font-weight:700;font-size:14px;border-bottom:1px solid var(--line-2)}
+.dimg-body{padding:28px 24px;display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:end;min-height:280px}
+.mchart{display:flex;gap:10px;align-items:flex-end;height:160px}
+.mbar{flex:1;background:var(--line-2);border-radius:3px 3px 0 0}
+.mpie{width:150px;height:150px;border-radius:50%;background:conic-gradient(#2b2b2b 0 40%,#b7b7b7 40% 70%,#dcdcdc 70% 100%);margin:0 auto}
 .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .kcol{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:10px}
 .kcol .kh{display:flex;justify-content:space-between;font-size:12px;font-weight:700;padding:2px 4px 10px;color:var(--ink-2)}
@@ -647,6 +671,32 @@ function docPreview(r){
   if(r.fmt==='MP4') return `<div style="min-height:118px;height:100%;background:var(--fill);border-radius:6px;display:grid;place-items:center;color:var(--ink-3);font-size:12px">▶ video</div>`;
   return '<div style="height:8px;width:40%;background:var(--line-2);border-radius:2px"></div>'+['90','80','85'].map(w=>`<div style="height:6px;width:${w}%;background:var(--line-2);border-radius:2px;margin-top:8px"></div>`).join('')+'<div style="border:1px solid var(--line-2);border-radius:6px;height:52px;margin-top:12px"></div>';
 }
+function docPage(r){
+  if(r.fmt==='PNG') return `<div class="dimg">
+    <div class="dimg-h">${r.title}</div>
+    <div class="dimg-body">
+      <div class="mchart"><div class="mbar" style="height:42%"></div><div class="mbar" style="height:72%"></div><div class="mbar" style="height:55%"></div><div class="mbar" style="height:92%"></div><div class="mbar" style="height:38%"></div></div>
+      <div class="mpie"></div>
+      <div style="grid-column:1 / -1"><div class="dline w70" style="margin:0 auto"></div><div class="dline w50" style="margin:8px auto 0"></div></div>
+    </div></div>`;
+  if(r.fmt==='XLSX'||r.fmt==='CSV'){
+    const cell=w=>`<div class="cell"><div class="dline ${w}" style="margin:0"></div></div>`;
+    return `<div class="dtable"><div class="tr th">${['State','Theme','Value','Year'].map(h=>`<div class="cell">${h}</div>`).join('')}</div>${[1,2,3,4,5,6].map(()=>`<div class="tr">${cell('w80')}${cell('w60')}${cell('w50')}${cell('w40')}</div>`).join('')}</div>`;
+  }
+  if(r.fmt==='MP4') return `<div class="dvid"><div class="dplay">▶</div></div>`;
+  return `<div class="dpage">
+    <div class="dpage-h">${r.title}</div>
+    <div class="dpage-sub">${r.type} · ${r.theme} · ${r.lang}</div>
+    <div class="dline w90"></div><div class="dline w95"></div><div class="dline w80"></div><div class="dline w60"></div>
+    <div class="dpage-h2">1. Overview</div>
+    <div class="dline w95"></div><div class="dline w90"></div><div class="dline w70"></div>
+    <div class="dbul"><span class="b"></span><div class="dline w60" style="margin:0"></div></div>
+    <div class="dbul"><span class="b"></span><div class="dline w50" style="margin:0"></div></div>
+    <div class="dbul"><span class="b"></span><div class="dline w70" style="margin:0"></div></div>
+    <div class="dpage-h2">2. Findings</div>
+    <div class="dline w90"></div><div class="dline w85"></div><div class="dline w40"></div>
+  </div>`;
+}
 function resourceCard(r,i){
   const m=resMeta(i||0);
   const editing = (i%4===1) ? RES_PEOPLE[(i+2)%RES_PEOPLE.length][1]+' is editing' : ((i%4===2) ? 'You are editing' : '');
@@ -995,7 +1045,7 @@ screens.resource=(p)=>{const r=resById(p.id)||RES[0];const i=resIndex(r);const m
     <div class="grid" style="grid-template-columns:1.7fr 1fr;gap:24px;align-items:start;margin-top:16px">
       <div class="panel docview">
         <div class="between"><div class="wf-note">${r.fmt} preview</div><a class="btn sm" onclick="toast('Full screen (placeholder)')">⤢</a></div>
-        <div class="docview-body"><div style="text-align:center"><div class="docview-ic">${fileSvg(r.fmt)}</div><div style="font-size:14px;color:var(--ink-2)">${r.title}</div></div></div>
+        <div class="docview-body">${docPage(r)}</div>
       </div>
       <div class="panel">
         <h3 style="margin:0 0 12px;font-size:16px">Document Details</h3>
