@@ -263,6 +263,13 @@ main{min-height:60vh;padding-bottom:40px}
 .mchart{display:flex;gap:10px;align-items:flex-end;height:160px}
 .mbar{flex:1;background:var(--line-2);border-radius:3px 3px 0 0}
 .mpie{width:150px;height:150px;border-radius:50%;background:conic-gradient(#2b2b2b 0 40%,#b7b7b7 40% 70%,#dcdcdc 70% 100%);margin:0 auto}
+.dtext{font-size:12.5px;line-height:1.7;color:var(--ink-2);margin:0 0 6px}
+.dul{margin:6px 0;padding-left:18px}
+.dul li{font-size:12.5px;line-height:1.7;color:var(--ink-2);margin:4px 0}
+.dpage-foot{margin-top:22px;padding-top:12px;border-top:1px solid var(--line-2);font-size:10px;color:var(--ink-3);text-align:center;letter-spacing:.04em}
+.dlegend{grid-column:1 / -1;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-size:11px;color:var(--ink-2)}
+.dlegend span{display:inline-flex;align-items:center;gap:6px}
+.dlegend i{width:11px;height:11px;border-radius:3px;display:inline-block}
 .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .kcol{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:10px}
 .kcol .kh{display:flex;justify-content:space-between;font-size:12px;font-weight:700;padding:2px 4px 10px;color:var(--ink-2)}
@@ -677,24 +684,28 @@ function docPage(r){
     <div class="dimg-body">
       <div class="mchart"><div class="mbar" style="height:42%"></div><div class="mbar" style="height:72%"></div><div class="mbar" style="height:55%"></div><div class="mbar" style="height:92%"></div><div class="mbar" style="height:38%"></div></div>
       <div class="mpie"></div>
-      <div style="grid-column:1 / -1"><div class="dline w70" style="margin:0 auto"></div><div class="dline w50" style="margin:8px auto 0"></div></div>
+      <div class="dlegend"><span><i style="background:#2b2b2b"></i>Forest</span><span><i style="background:#b7b7b7"></i>Water &amp; pasture</span><span><i style="background:#dcdcdc"></i>Coastal &amp; cultural</span></div>
+      <div style="grid-column:1 / -1;text-align:center;font-size:12px;color:var(--ink-3)">Share of commons by type across 28 states · Source: Our Commons</div>
     </div></div>`;
   if(r.fmt==='XLSX'||r.fmt==='CSV'){
-    const cell=w=>`<div class="cell"><div class="dline ${w}" style="margin:0"></div></div>`;
-    return `<div class="dtable"><div class="tr th">${['State','Theme','Value','Year'].map(h=>`<div class="cell">${h}</div>`).join('')}</div>${[1,2,3,4,5,6].map(()=>`<div class="tr">${cell('w80')}${cell('w60')}${cell('w50')}${cell('w40')}</div>`).join('')}</div>`;
+    const data=[["Rajasthan","Pasture","High","2026"],["Kerala","Coastal","Medium","2026"],["Nagaland","Forest","High","2025"],["Tamil Nadu","Water","High","2026"],["Meghalaya","Cultural","Medium","2025"],["Gujarat","Pasture","Medium","2026"],["Odisha","Forest","High","2025"]];
+    return `<div class="dtable"><div class="tr th">${['State','Theme','Significance','Year'].map(h=>`<div class="cell">${h}</div>`).join('')}</div>${data.map(row=>`<div class="tr">${row.map(c=>`<div class="cell">${c}</div>`).join('')}</div>`).join('')}</div>`;
   }
   if(r.fmt==='MP4') return `<div class="dvid"><div class="dplay">▶</div></div>`;
   return `<div class="dpage">
     <div class="dpage-h">${r.title}</div>
-    <div class="dpage-sub">${r.type} · ${r.theme} · ${r.lang}</div>
-    <div class="dline w90"></div><div class="dline w95"></div><div class="dline w80"></div><div class="dline w60"></div>
+    <div class="dpage-sub">${r.type} · ${r.theme} · ${r.lang} · India Observatory</div>
+    <p class="dtext">Commons are tangible and intangible resources used and managed by communities or collectives for their shared benefit — from land, water and forests to cultural knowledge and the digital. This ${r.type.toLowerCase()} examines how communities across India govern, sustain and revive their commons.</p>
     <div class="dpage-h2">1. Overview</div>
-    <div class="dline w95"></div><div class="dline w90"></div><div class="dline w70"></div>
-    <div class="dbul"><span class="b"></span><div class="dline w60" style="margin:0"></div></div>
-    <div class="dbul"><span class="b"></span><div class="dline w50" style="margin:0"></div></div>
-    <div class="dbul"><span class="b"></span><div class="dline w70" style="margin:0"></div></div>
-    <div class="dpage-h2">2. Findings</div>
-    <div class="dline w90"></div><div class="dline w85"></div><div class="dline w40"></div>
+    <p class="dtext">Across states, local institutions such as van panchayats, gram sabhas and fisher associations set customary rules that decide who may use a common, when, and how much — the rules that keep commons sustainable across generations.</p>
+    <div class="dpage-h2">2. Key findings</div>
+    <ul class="dul">
+      <li>Community-governed commons show stronger ecological outcomes than open-access lands.</li>
+      <li>Local names and rules for commons vary widely by region and resource type.</li>
+      <li>Recognition of community rights is the single biggest driver of stewardship.</li>
+    </ul>
+    <p class="dtext">See the accompanying Commons Matrix for state- and theme-wise detail.</p>
+    <div class="dpage-foot">Page 1 of 12 · Our Commons · Commons Platform · 2026</div>
   </div>`;
 }
 function resourceCard(r,i){
