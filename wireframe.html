@@ -442,6 +442,19 @@ const ROLE_CAN=[
   {contribute:true, moderate:true, admin:false},
   {contribute:true, moderate:true, admin:true}
 ];
+const MY_CONTRIB=[
+  ["Local Name","Devrai near Bhimashankar","Maharashtra · Pune","Pending"],
+  ["Local Rule","Rotational grazing custom","Rajasthan · Barmer","Reviewed"],
+  ["Local Name","Eri tank system","Tamil Nadu · Madurai","Approved"],
+  ["Local Name","Van Panchayat forest","Uttarakhand · Almora","Published"],
+  ["Local Rule","Fishing closed-season","Kerala · Kollam","Published"]
+];
+const APPROVAL_QUEUE=[
+  ["Local Name","Devrai near Bhimashankar","Maharashtra · Pune","RS","Pending"],
+  ["Local Rule","Rotational grazing custom","Rajasthan · Barmer","AK","Pending"],
+  ["Local Name","Eri tank system","Tamil Nadu · Madurai","PL","Reviewed"],
+  ["Local Name","Kavu sacred grove","Kerala · Thrissur","NM","Approved"]
+];
 let currentRole=null; /* null = signed out (guest) */
 let loginRole=ROLES.length-1; /* role selected on the login form (default: Super Admin) */
 function toggleLoginRole(e){e.stopPropagation();const d=document.getElementById('loginRoleDD');if(d)d.classList.toggle('open');}
@@ -535,6 +548,8 @@ function header(active){
     authArea=`<div class="profilew" id="profilew"><button class="profilew-btn" onclick="toggleProfileW(event)"><span class="pw-av">${ini}</span><span class="pw-name">${nm}</span><span class="pw-cv">▾</span></button>`
       +`<div class="profilew-menu"><div class="pw-head"><span class="pw-av lg">${ini}</span><div><b>${nm}</b><span>Signed-in role</span></div></div><div class="pw-div"></div>`
       +`<button class="pw-item" onclick="pwClose();go('#/profile')"><span class="pw-ic">👤</span> My Profile</button>`
+      +(roleCan('contribute')?`<button class="pw-item" onclick="pwClose();go('#/contributions')"><span class="pw-ic">📄</span> My Contributions</button>`:'')
+      +(roleCan('moderate')?`<button class="pw-item" onclick="pwClose();go('#/approvals')"><span class="pw-ic">✅</span> Approvals</button>`:'')
       +`<button class="pw-item" onclick="pwClose();go('#/password')"><span class="pw-ic">🔑</span> Change Password</button>`
       +`<div class="pw-div"></div><button class="pw-item danger" onclick="signOut()"><span class="pw-ic">⎋</span> Logout</button></div></div>`; }
   return `<header class="site"><div class="container"><nav class="nav">
@@ -1057,7 +1072,12 @@ screens.profile=()=>{
           <div class="grid g2"><div class="field-block"><span class="wf-label">Organisation</span><div class="wf-field">India Observatory</div></div><div class="field-block"><span class="wf-label">Role</span><div class="wf-field">${nm}</div></div></div>
           <div class="row"><a class="btn primary" onclick="toast('Profile saved (placeholder)')">Save changes</a><a class="btn" onclick="go('#/password')">Change password</a></div>
         </div>
-        <div class="ctx-row" onclick="go('#/contribute')" style="cursor:pointer"><h5>My contributions</h5><p>Local names &amp; rules you have submitted, with their review status (Pending → Reviewed → Approved → Published).</p></div>
+        <div class="wf-note">Your modules</div>
+        <div class="grid g2">
+          ${roleCan('contribute')?`<div class="ctx-row" onclick="go('#/contributions')" style="cursor:pointer"><h5>📄 My Contributions</h5><p>Local names &amp; rules you have submitted, with their status (Pending → Reviewed → Approved → Published).</p></div>`:''}
+          ${roleCan('moderate')?`<div class="ctx-row" onclick="go('#/approvals')" style="cursor:pointer"><h5>✅ Approval module</h5><p>Review and approve submissions in the moderation queue.</p></div>`:''}
+          ${!roleCan('contribute')?`<div class="ctx-row"><h5>Browse &amp; download</h5><p>As a Visitor you can browse and search all content and download resources.</p></div>`:''}
+        </div>
       </div>
     </div>
   </section>`);
@@ -1074,6 +1094,42 @@ screens.password=()=>{
       <div class="wf-note" style="margin-bottom:14px">Use 8+ characters with a mix of letters, numbers and symbols.</div>
       <div class="row"><a class="btn primary" onclick="toast('Password updated (placeholder)')">Update password</a><a class="btn" onclick="go('#/profile')">Cancel</a></div>
     </div>
+  </section>`);
+};
+screens.contributions=()=>{
+  if(!roleCan('contribute')) return gateScreen('My Contributions','Sign in as a Registered User or higher to contribute local names and rules and track your submissions.');
+  const pill=s=>`<span class="tag ${(s==='Published'||s==='Approved')?'solid':''}">${s}</span>`;
+  const n=st=>MY_CONTRIB.filter(c=>c[3]===st).length;
+  return shell(null,[{label:"Home",href:"#/home"},{label:"My Profile",href:"#/profile"},{label:"My Contributions"}],`
+  <section class="section">
+    <div class="between"><div><div class="eyebrow">Profile · Contributions</div><h2 class="mb0">My Contributions</h2></div><a class="btn primary" onclick="go('#/contribute')">+ Contribute a Common</a></div>
+    <p class="sub">The local names and rules you have submitted, and where each one sits in the review workflow.</p>
+    <div class="flow mt8"><div class="node">Pending</div><div class="arw">→</div><div class="node">Reviewed</div><div class="arw">→</div><div class="node">Approved</div><div class="arw">→</div><div class="node strong">Published</div></div>
+    <div class="grid g4 mt16">
+      <div class="stat"><b>${MY_CONTRIB.length}</b><span>Total submissions</span></div>
+      <div class="stat"><b>${n('Pending')+n('Reviewed')}</b><span>In review</span></div>
+      <div class="stat"><b>${n('Approved')}</b><span>Approved</span></div>
+      <div class="stat"><b>${n('Published')}</b><span>Published</span></div>
+    </div>
+    <div class="panel mt16">${MY_CONTRIB.map((c,i)=>`<div class="between" style="${i?'border-top:1px solid var(--line-2);':''}padding:12px 2px"><div><b style="font-size:14px">${c[1]}</b><div class="wf-note" style="text-transform:none;letter-spacing:0">${c[0]} · ${c[2]}</div></div><div class="row" style="gap:12px;align-items:center">${pill(c[3])}<a class="btn sm" onclick="toast('View submission (placeholder)')">View</a></div></div>`).join("")}</div>
+  </section>`);
+};
+screens.approvals=()=>{
+  if(!roleCan('moderate')) return gateScreen('Approvals','Sign in as a Moderator or Admin to review and approve submissions.');
+  const pill=s=>`<span class="tag ${(s==='Published'||s==='Approved')?'solid':''}">${s}</span>`;
+  const act=s=>s==='Pending'?'Review':s==='Reviewed'?'Approve':s==='Approved'?'Publish':'View';
+  const n=st=>APPROVAL_QUEUE.filter(c=>c[4]===st).length;
+  return shell(null,[{label:"Home",href:"#/home"},{label:"My Profile",href:"#/profile"},{label:"Approvals"}],`
+  <section class="section">
+    <div class="between"><div><div class="eyebrow">Profile · Approval module</div><h2 class="mb0">Approvals</h2></div><a class="btn" onclick="go('#/admin')">Open full dashboard →</a></div>
+    <p class="sub">Submissions awaiting your review. Move each through Pending → Reviewed → Approved → Published.</p>
+    <div class="grid g4 mt16">
+      <div class="stat"><b>${n('Pending')}</b><span>Pending</span></div>
+      <div class="stat"><b>${n('Reviewed')}</b><span>Reviewed</span></div>
+      <div class="stat"><b>${n('Approved')}</b><span>Approved</span></div>
+      <div class="stat"><b>${APPROVAL_QUEUE.length}</b><span>Total in queue</span></div>
+    </div>
+    <div class="panel mt16">${APPROVAL_QUEUE.map((c,i)=>`<div class="between" style="${i?'border-top:1px solid var(--line-2);':''}padding:12px 2px"><div class="row" style="gap:10px;align-items:center"><span class="pw-av" style="width:28px;height:28px;font-size:11px">${c[3]}</span><div><b style="font-size:14px">${c[1]}</b><div class="wf-note" style="text-transform:none;letter-spacing:0">${c[0]} · ${c[2]}</div></div></div><div class="row" style="gap:10px;align-items:center">${pill(c[4])}<a class="btn sm" onclick="toast('${act(c[4])} — ${c[1]} (placeholder)')">${act(c[4])}</a></div></div>`).join("")}</div>
   </section>`);
 };
 
