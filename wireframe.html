@@ -196,6 +196,29 @@ main{min-height:60vh;padding-bottom:40px}
 .dropdown.open .dropdown-menu{display:block}
 .dd-opt2{padding:8px 10px;border-radius:5px;font-size:13px;cursor:pointer;color:var(--ink)}
 .dd-opt2:hover{background:var(--fill)}
+/* approval workflow timeline + status tabs (ref: DMS admin flow) */
+.wf-tl{display:flex;flex-direction:column}
+.wf-ev{display:flex;gap:12px;position:relative;padding-bottom:18px}
+.wf-ev:last-child{padding-bottom:0}
+.wf-ev .wf-ic{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--panel);display:grid;place-items:center;font-size:13px;z-index:1}
+.wf-ev.done .wf-ic{background:var(--ink);color:#fff;border-color:var(--ink)}
+.wf-ev.pending .wf-ic{border-style:dashed;color:var(--ink-3)}
+.wf-ev:not(:last-child)::before{content:"";position:absolute;left:14px;top:30px;bottom:0;width:1px;background:var(--line-2)}
+.wf-ev .wf-lb{font-weight:600;font-size:14px}
+.wf-ev.pending .wf-lb{color:var(--ink-2)}
+.wf-ev .wf-mt{font-size:12px;color:var(--ink-3)}
+.tabs-c{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line-2);padding-bottom:10px;margin:14px 0 16px}
+.tab-c{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 12px;font-size:12.5px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;color:var(--ink)}
+.tab-c:hover{background:var(--fill)}
+.tab-c.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tab-c .cnt{background:var(--fill);border-radius:999px;padding:0 7px;font-size:11px;font-weight:700;color:var(--ink-2)}
+.tab-c.active .cnt{background:rgba(255,255,255,.22);color:#fff}
+.sub-row{cursor:pointer}
+.sub-row:hover{background:var(--panel-2)}
+.detail-f{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--line-2);font-size:13px}
+.detail-f:first-child{border-top:0}
+.detail-f .k{color:var(--ink-3)}
+.detail-f .v{color:var(--ink);font-weight:500;text-align:right}
 .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .kcol{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:10px}
 .kcol .kh{display:flex;justify-content:space-between;font-size:12px;font-weight:700;padding:2px 4px 10px;color:var(--ink-2)}
@@ -1096,40 +1119,101 @@ screens.password=()=>{
     </div>
   </section>`);
 };
-screens.contributions=()=>{
+function statusPill(s){const solid=(s==='Approved'||s==='Published');return `<span class="tag ${solid?'solid':''}">${s}</span>`;}
+function wfTimeline(stage,who){
+  const steps=[["Submitted","Submitted by "+who+" · 12 May 2026"],["Under review","Verified by a moderator"],["Approved","Approved for publishing"],["Published","Live on the map & pages"]];
+  return `<div class="wf-tl">${steps.map((st,i)=>{const done=i<=stage,next=i===stage+1;const ic=done?'✓':(next?'◔':'○');const meta=done?st[1]:(next?'Awaiting action':'Not started');return `<div class="wf-ev ${done?'done':'pending'}"><div class="wf-ic">${ic}</div><div><div class="wf-lb">${st[0]}</div><div class="wf-mt">${meta}</div></div></div>`;}).join("")}</div>`;
+}
+screens.contributions=(p)=>{
   if(!roleCan('contribute')) return gateScreen('My Contributions','Sign in as a Registered User or higher to contribute local names and rules and track your submissions.');
-  const pill=s=>`<span class="tag ${(s==='Published'||s==='Approved')?'solid':''}">${s}</span>`;
+  const tab=(p&&p.tab)||'All';
   const n=st=>MY_CONTRIB.filter(c=>c[3]===st).length;
+  const tabs=[['All',MY_CONTRIB.length],['Pending',n('Pending')],['Reviewed',n('Reviewed')],['Approved',n('Approved')],['Published',n('Published')]];
+  const rows=MY_CONTRIB.map((c,i)=>({c,i})).filter(o=>tab==='All'||o.c[3]===tab);
   return shell(null,[{label:"Home",href:"#/home"},{label:"My Profile",href:"#/profile"},{label:"My Contributions"}],`
   <section class="section">
     <div class="between"><div><div class="eyebrow">Profile · Contributions</div><h2 class="mb0">My Contributions</h2></div><a class="btn primary" onclick="go('#/contribute')">+ Contribute a Common</a></div>
-    <p class="sub">The local names and rules you have submitted, and where each one sits in the review workflow.</p>
-    <div class="flow mt8"><div class="node">Pending</div><div class="arw">→</div><div class="node">Reviewed</div><div class="arw">→</div><div class="node">Approved</div><div class="arw">→</div><div class="node strong">Published</div></div>
-    <div class="grid g4 mt16">
+    <p class="sub">The local names and rules you have submitted, and where each sits in the review workflow. Tap a submission to see its full approval flow.</p>
+    <div class="grid g4 mt8">
       <div class="stat"><b>${MY_CONTRIB.length}</b><span>Total submissions</span></div>
       <div class="stat"><b>${n('Pending')+n('Reviewed')}</b><span>In review</span></div>
       <div class="stat"><b>${n('Approved')}</b><span>Approved</span></div>
       <div class="stat"><b>${n('Published')}</b><span>Published</span></div>
     </div>
-    <div class="panel mt16">${MY_CONTRIB.map((c,i)=>`<div class="between" style="${i?'border-top:1px solid var(--line-2);':''}padding:12px 2px"><div><b style="font-size:14px">${c[1]}</b><div class="wf-note" style="text-transform:none;letter-spacing:0">${c[0]} · ${c[2]}</div></div><div class="row" style="gap:12px;align-items:center">${pill(c[3])}<a class="btn sm" onclick="toast('View submission (placeholder)')">View</a></div></div>`).join("")}</div>
+    <div class="tabs-c">${tabs.map(t=>`<span class="tab-c ${tab===t[0]?'active':''}" onclick="go('#/contributions${t[0]==='All'?'':'?tab='+t[0]}')">${t[0]} <span class="cnt">${t[1]}</span></span>`).join("")}</div>
+    <div class="panel">${rows.length?rows.map((o,j)=>`<div class="sub-row" style="${j?'border-top:1px solid var(--line-2);':''}display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 6px" onclick="go('#/submission/mine/${o.i}')"><div><b style="font-size:14px">${o.c[1]}</b><div class="wf-note" style="text-transform:none;letter-spacing:0">${o.c[0]} · ${o.c[2]}</div></div><div class="row" style="gap:12px;align-items:center">${statusPill(o.c[3])}<span class="btn sm">View →</span></div></div>`).join(""):'<div class="wf-note" style="padding:18px;text-transform:none;letter-spacing:0">No submissions in this status.</div>'}</div>
   </section>`);
 };
-screens.approvals=()=>{
+screens.approvals=(p)=>{
   if(!roleCan('moderate')) return gateScreen('Approvals','Sign in as a Moderator or Admin to review and approve submissions.');
-  const pill=s=>`<span class="tag ${(s==='Published'||s==='Approved')?'solid':''}">${s}</span>`;
   const act=s=>s==='Pending'?'Review':s==='Reviewed'?'Approve':s==='Approved'?'Publish':'View';
+  const tab=(p&&p.tab)||'All';
   const n=st=>APPROVAL_QUEUE.filter(c=>c[4]===st).length;
+  const tabs=[['All',APPROVAL_QUEUE.length],['Pending',n('Pending')],['Reviewed',n('Reviewed')],['Approved',n('Approved')]];
+  const rows=APPROVAL_QUEUE.map((c,i)=>({c,i})).filter(o=>tab==='All'||o.c[4]===tab);
   return shell(null,[{label:"Home",href:"#/home"},{label:"My Profile",href:"#/profile"},{label:"Approvals"}],`
   <section class="section">
     <div class="between"><div><div class="eyebrow">Profile · Approval module</div><h2 class="mb0">Approvals</h2></div><a class="btn" onclick="go('#/admin')">Open full dashboard →</a></div>
-    <p class="sub">Submissions awaiting your review. Move each through Pending → Reviewed → Approved → Published.</p>
-    <div class="grid g4 mt16">
+    <p class="sub">Submissions awaiting your review. Tap one to open its approval flow and act on it.</p>
+    <div class="grid g4 mt8">
       <div class="stat"><b>${n('Pending')}</b><span>Pending</span></div>
       <div class="stat"><b>${n('Reviewed')}</b><span>Reviewed</span></div>
       <div class="stat"><b>${n('Approved')}</b><span>Approved</span></div>
       <div class="stat"><b>${APPROVAL_QUEUE.length}</b><span>Total in queue</span></div>
     </div>
-    <div class="panel mt16">${APPROVAL_QUEUE.map((c,i)=>`<div class="between" style="${i?'border-top:1px solid var(--line-2);':''}padding:12px 2px"><div class="row" style="gap:10px;align-items:center"><span class="pw-av" style="width:28px;height:28px;font-size:11px">${c[3]}</span><div><b style="font-size:14px">${c[1]}</b><div class="wf-note" style="text-transform:none;letter-spacing:0">${c[0]} · ${c[2]}</div></div></div><div class="row" style="gap:10px;align-items:center">${pill(c[4])}<a class="btn sm" onclick="toast('${act(c[4])} — ${c[1]} (placeholder)')">${act(c[4])}</a></div></div>`).join("")}</div>
+    <div class="tabs-c">${tabs.map(t=>`<span class="tab-c ${tab===t[0]?'active':''}" onclick="go('#/approvals${t[0]==='All'?'':'?tab='+t[0]}')">${t[0]} <span class="cnt">${t[1]}</span></span>`).join("")}</div>
+    <div class="panel">${rows.length?rows.map((o,j)=>`<div class="sub-row" style="${j?'border-top:1px solid var(--line-2);':''}display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 6px" onclick="go('#/submission/queue/${o.i}')"><div class="row" style="gap:10px;align-items:center"><span class="pw-av" style="width:28px;height:28px;font-size:11px">${o.c[3]}</span><div><b style="font-size:14px">${o.c[1]}</b><div class="wf-note" style="text-transform:none;letter-spacing:0">${o.c[0]} · ${o.c[2]}</div></div></div><div class="row" style="gap:10px;align-items:center">${statusPill(o.c[4])}<span class="btn sm">${act(o.c[4])} →</span></div></div>`).join(""):'<div class="wf-note" style="padding:18px;text-transform:none;letter-spacing:0">Nothing in this status.</div>'}</div>
+  </section>`);
+};
+screens.submission=(p)=>{
+  const fromQueue=p.src==='queue';
+  const arr=fromQueue?APPROVAL_QUEUE:MY_CONTRIB;
+  const it=arr[+p.idx];
+  if(!it) return gateScreen('Submission','This submission could not be found.');
+  if(fromQueue && !roleCan('moderate')) return gateScreen('Submission','Sign in as a Moderator or Admin to review this submission.');
+  if(!fromQueue && !roleCan('contribute')) return gateScreen('Submission','Sign in to view your submissions.');
+  const type=it[0],name=it[1],loc=it[2];
+  const status=fromQueue?it[4]:it[3];
+  const who=fromQueue?it[3]:'You';
+  const canApprove=roleCan('moderate')&&fromQueue;
+  const back=fromQueue?'#/approvals':'#/contributions';
+  const stage=status==='Pending'?0:status==='Reviewed'?1:status==='Approved'?2:status==='Published'?3:0;
+  return shell(null,[{label:"Home",href:"#/home"},{label:fromQueue?"Approvals":"My Contributions",href:back},{label:name}],`
+  <section class="section">
+    <div class="between"><div><div class="eyebrow">${fromQueue?'Approval':'Submission'} · ${type}</div><h2 class="mb0">${name}</h2><div class="wf-note" style="text-transform:none;letter-spacing:0;margin-top:4px">${loc}</div></div>${statusPill(status)}</div>
+    <div class="grid" style="grid-template-columns:1.6fr 1fr;gap:24px;align-items:start;margin-top:16px">
+      <div class="stack">
+        <div class="panel"><div class="wf-note" style="margin-bottom:14px">Approval workflow</div>${wfTimeline(stage,who)}</div>
+        <div class="panel"><div class="wf-note" style="margin-bottom:12px">Activity log</div>
+          <div class="stack" style="gap:12px">
+            <div class="row" style="gap:10px;align-items:flex-start"><span style="width:8px;height:8px;border-radius:50%;background:var(--ink-3);margin-top:6px;flex:none"></span><div><div style="font-size:13px"><b>${who}</b> submitted this ${type.toLowerCase()}</div><div class="wf-note" style="text-transform:none;letter-spacing:0">2026-05-12 · 10:45 AM</div></div></div>
+            ${stage>=1?`<div class="row" style="gap:10px;align-items:flex-start"><span style="width:8px;height:8px;border-radius:50%;background:var(--ink);margin-top:6px;flex:none"></span><div><div style="font-size:13px"><b>Moderator</b> reviewed and verified the details</div><div class="wf-note" style="text-transform:none;letter-spacing:0">2026-05-13 · 03:20 PM</div></div></div>`:''}
+            ${stage>=2?`<div class="row" style="gap:10px;align-items:flex-start"><span style="width:8px;height:8px;border-radius:50%;background:var(--ink);margin-top:6px;flex:none"></span><div><div style="font-size:13px"><b>Admin</b> approved for publishing</div><div class="wf-note" style="text-transform:none;letter-spacing:0">2026-05-14 · 11:05 AM</div></div></div>`:''}
+            ${stage>=3?`<div class="row" style="gap:10px;align-items:flex-start"><span style="width:8px;height:8px;border-radius:50%;background:var(--ink);margin-top:6px;flex:none"></span><div><div style="font-size:13px">Published — now live on the map &amp; pages</div><div class="wf-note" style="text-transform:none;letter-spacing:0">2026-05-14 · 04:30 PM</div></div></div>`:''}
+          </div>
+        </div>
+        <div class="panel"><div class="wf-note" style="margin-bottom:12px">Comments</div>
+          <div class="row" style="gap:10px;align-items:flex-start"><span class="pw-av" style="width:28px;height:28px;font-size:11px">MP</span><div style="flex:1"><div style="font-size:13px"><b>Moderator</b> &nbsp;·&nbsp; 13 May 2026</div><div style="font-size:13px;color:var(--ink-2)">Please confirm the GPS location — it looks slightly off from the state boundary.</div></div></div>
+          <div class="row" style="gap:10px;align-items:flex-start;margin-top:14px"><span class="pw-av" style="width:28px;height:28px;font-size:11px">${who==='You'?'YO':who}</span><div style="flex:1"><div class="wf-field" style="min-height:44px;align-items:flex-start;color:var(--ink-3)">Add a comment…</div><a class="btn sm primary" style="margin-top:8px" onclick="toast('Comment posted (placeholder)')">Post comment</a></div></div>
+        </div>
+      </div>
+      <div class="stack">
+        <div class="panel"><div class="wf-note" style="margin-bottom:8px">Details</div>
+          <div class="detail-f"><span class="k">Type</span><span class="v">${type}</span></div>
+          <div class="detail-f"><span class="k">State / District</span><span class="v">${loc}</span></div>
+          <div class="detail-f"><span class="k">GPS</span><span class="v">18.52° N, 73.86° E</span></div>
+          <div class="detail-f"><span class="k">Contributor</span><span class="v">${who==='You'?'You':who}</span></div>
+          <div class="detail-f"><span class="k">Status</span><span class="v">${statusPill(status)}</span></div>
+          <div class="detail-f"><span class="k">Submitted on</span><span class="v">12 May 2026</span></div>
+        </div>
+        ${canApprove?`<div class="panel"><div class="wf-note" style="margin-bottom:10px">Actions</div>
+          <a class="btn primary block" onclick="toast('Approved — ${name} (placeholder)')">✓ Approve</a>
+          <a class="btn block" style="margin-top:8px" onclick="toast('Changes requested (placeholder)')">Request changes</a>
+          <a class="btn block" style="margin-top:8px" onclick="toast('Rejected (placeholder)')">Reject</a>
+        </div>`:''}
+        <a class="btn block" onclick="go('${back}')">← Back to ${fromQueue?'Approvals':'My Contributions'}</a>
+      </div>
+    </div>
   </section>`);
 };
 
@@ -1172,6 +1256,7 @@ function render(){
   else if(name==="type"){params.id=parts[1];html=screens.type(params);}
   else if(name==="story"){params.id=parts[1];html=screens.story(params);}
   else if(name==="resource"){params.id=parts[1];html=screens.resource(params);}
+  else if(name==="submission"){params.src=parts[1];params.idx=parts[2];html=screens.submission(params);}
   else if(screens[name]){html=screens[name](params);}
   else{html=screens.home();}
   document.getElementById("app").innerHTML=html;
