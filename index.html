@@ -1,0 +1,49 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Understanding Commons — Prototypes</title>
+<style>
+:root{--ink:#2B3674;--blue:#1F4397;--green:#2E8540;--line:#e6e9f2;--bg:#f6f8fc;--muted:#5b6472}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}
+.wrap{max-width:940px;margin:0 auto;padding:64px 24px}
+.badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green)}
+h1{font-size:38px;font-weight:800;letter-spacing:-.02em;margin:14px 0 10px}
+p.lead{font-size:18px;color:var(--muted);max-width:60ch;margin:0 0 36px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+a.card{display:block;text-decoration:none;color:inherit;background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;transition:.15s;box-shadow:0 24px 60px -40px rgba(43,54,116,.4)}
+a.card:hover{transform:translateY(-3px);border-color:#c9d2e6;box-shadow:0 30px 70px -36px rgba(43,54,116,.5)}
+a.card .tag{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+a.card h2{font-size:20px;margin:10px 0 6px}
+a.card p{font-size:14px;color:var(--muted);margin:0 0 14px}
+a.card .go{font-size:13px;font-weight:700;color:var(--blue)}
+.foot{margin-top:40px;font-size:13px;color:var(--muted)}
+.foot a{color:var(--blue)}
+</style>
+<div class="wrap">
+  <span class="badge">🌱 Commons Platform · India</span>
+  <h1>Understanding Commons</h1>
+  <p class="lead">An educational module of the Commons Platform — introducing the idea of Commons, their local names and significance, and the acts of commoning across India. Design prototypes below.</p>
+  <div class="grid">
+    <a class="card" href="wireframe.html">
+      <div class="tag">Low-fidelity</div>
+      <h2>Wireframe Prototype</h2>
+      <p>Navigable grayscale wireframe of the full module — every page, flow and interaction.</p>
+      <div class="go">Open wireframe →</div>
+    </a>
+    <a class="card" href="understanding-commons-ui.html">
+      <div class="tag">High-fidelity</div>
+      <h2>UI Prototype</h2>
+      <p>Designed, interactive prototype in the Commons Platform house style.</p>
+      <div class="go">Open UI prototype →</div>
+    </a>
+    <a class="card" href="login.html">
+      <div class="tag">Auth</div>
+      <h2>Login Page</h2>
+      <p>Split-screen sign-in with role selection and the contribution hero.</p>
+      <div class="go">Open login →</div>
+    </a>
+  </div>
+  <p class="foot">Built on India's Digital Public Infrastructure · <a href="wireframe.html">Start with the wireframe</a></p>
+</div>
