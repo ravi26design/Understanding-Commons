@@ -219,6 +219,26 @@ main{min-height:60vh;padding-bottom:40px}
 .detail-f:first-child{border-top:0}
 .detail-f .k{color:var(--ink-3)}
 .detail-f .v{color:var(--ink);font-weight:500;text-align:right}
+/* document cards + viewer (ref: DMS document grid) */
+.doc-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column}
+.doc-top{display:flex;align-items:center;gap:10px}
+.doc-fi{flex:none;width:34px;height:34px;border-radius:7px;background:var(--ink);color:#fff;display:grid;place-items:center}
+.doc-name{flex:1;min-width:0;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-more{flex:none;width:28px;height:28px;border:0;background:none;border-radius:6px;cursor:pointer;color:var(--ink-3);font-size:16px;line-height:1}
+.doc-more:hover{background:var(--fill)}
+.doc-prev{border:1px solid var(--line-2);border-radius:var(--radius);background:var(--panel-2);padding:16px;margin:12px 0;min-height:150px;cursor:pointer;overflow:hidden}
+.doc-prev:hover{border-color:var(--line)}
+.doc-foot{display:flex;align-items:center;gap:9px;padding-top:12px;border-top:1px solid var(--line-2)}
+.doc-editing{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-3);padding-top:10px}
+.doc-editing .edot{width:7px;height:7px;border-radius:50%;background:var(--ink-3)}
+.detail-blk{padding:14px 0;border-top:1px solid var(--line-2)}
+.detail-blk:first-of-type{border-top:0;padding-top:0}
+.detail-blk .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+.detail-blk .v-lg{font-size:15px;font-weight:500;color:var(--ink)}
+.mono{font-family:var(--mono)}
+.docview{min-height:520px;display:flex;flex-direction:column}
+.docview-body{flex:1;display:grid;place-items:center;color:var(--ink-3);padding:24px}
+.docview-ic{width:112px;height:112px;border:1px solid var(--line);border-radius:16px;display:grid;place-items:center;margin:0 auto 14px;color:var(--ink-3)}
 .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .kcol{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius);padding:10px}
 .kcol .kh{display:flex;justify-content:space-between;font-size:12px;font-weight:700;padding:2px 4px 10px;color:var(--ink-2)}
@@ -451,18 +471,12 @@ function resById(id){return RES.find(r=>r.id===id)}
 const ROLES=[
   ["Visitor","Browse & search; download documents and infographics"],
   ["Registered User","Browse & search; feedback & comment; contribute data"],
-  ["Organization Moderator","Approve / manage content; moderation dashboard; reports"],
-  ["Organization Administrator","Manage users & own-org content; dashboards; reports"],
-  ["Platform Moderator","Manage & archive content across the platform"],
   ["Platform Super Admin","Highest level of control — full access"]
 ];
 /* capability flags per role (drives what each role sees) */
 const ROLE_CAN=[
   {contribute:false,moderate:false,admin:false},
   {contribute:true, moderate:false,admin:false},
-  {contribute:true, moderate:true, admin:false},
-  {contribute:true, moderate:true, admin:true},
-  {contribute:true, moderate:true, admin:false},
   {contribute:true, moderate:true, admin:true}
 ];
 const MY_CONTRIB=[
@@ -616,11 +630,32 @@ function workflowFlow(){
     <div class="node ${i===WORKFLOW.length-1?'strong':''}">${w.t}<span class="sub2">${w.r}</span></div>
     ${i<WORKFLOW.length-1?'<div class="arw">→</div>':''}`).join("")}</div>`;
 }
-function resourceCard(r){
-  return `<div class="rcard"><div class="rc-top"><h4>${r.title}</h4><span class="rc-type-chip">${r.type}</span></div>
-    <p class="purpose">${r.purpose}</p>
-    <div class="meta-tags"><span class="tag">${r.theme}</span><span class="tag">${r.audience}</span><span class="tag">${r.fmt}</span><span class="tag">${r.lang}</span></div>
-    <div class="rc-actions"><a class="btn sm primary" onclick="go('#/resource/${r.id}')">View</a><a class="btn sm" onclick="toast('Download (placeholder): ${r.title}')">Download</a></div></div>`;
+const RES_PEOPLE=[["PS","You"],["KM","Kavita Menon"],["AJ","Aditi Joshi"],["KI","Krishnan Iyer"],["SJ","Sarah Johnson"],["MP","Manish Patel"]];
+function resIndex(r){return Math.max(0,RES.findIndex(x=>x.id===r.id));}
+function resMeta(i){const p=RES_PEOPLE[i%RES_PEOPLE.length];return {ini:p[0],name:p[1],date:'2026-05-'+String(24-(i%9)).padStart(2,'0'),size:(1+((i*5)%9))+'.'+((i*3)%9)+' MB'};}
+function fileKind(f){return ({PDF:'Document',XLSX:'Spreadsheet',CSV:'Dataset',PNG:'Image',MP4:'Video',DOCX:'Document',PPTX:'Slides'})[f]||'Document';}
+function fileSvg(f){
+  if(f==='XLSX'||f==='CSV') return '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9h18M3 14h18M9 4v16M15 4v16"/></svg>';
+  if(f==='PPTX') return '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg>';
+  if(f==='PNG') return '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1.5"/><circle cx="9" cy="9" r="1.6"/><path d="M4 18l5-4 4 3 3-2 4 3"/></svg>';
+  if(f==='MP4') return '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M10 9l5 3-5 3z"/></svg>';
+  return '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>';
+}
+function docPreview(r){
+  if(r.fmt==='XLSX'||r.fmt==='CSV') return `<div style="height:12px;background:var(--ink);border-radius:2px;width:70%;margin-bottom:12px"></div>`+[1,2,3,4,5,6].map(()=>'<div style="height:5px;background:var(--line-2);border-radius:2px;margin:8px 0"></div>').join('');
+  if(r.fmt==='PNG') return `<div style="min-height:118px;height:100%;background:var(--fill);border-radius:6px;display:grid;place-items:center;color:var(--ink-3);font-size:12px">image</div>`;
+  if(r.fmt==='MP4') return `<div style="min-height:118px;height:100%;background:var(--fill);border-radius:6px;display:grid;place-items:center;color:var(--ink-3);font-size:12px">▶ video</div>`;
+  return '<div style="height:8px;width:40%;background:var(--line-2);border-radius:2px"></div>'+['90','80','85'].map(w=>`<div style="height:6px;width:${w}%;background:var(--line-2);border-radius:2px;margin-top:8px"></div>`).join('')+'<div style="border:1px solid var(--line-2);border-radius:6px;height:52px;margin-top:12px"></div>';
+}
+function resourceCard(r,i){
+  const m=resMeta(i||0);
+  const editing = (i%4===1) ? RES_PEOPLE[(i+2)%RES_PEOPLE.length][1]+' is editing' : ((i%4===2) ? 'You are editing' : '');
+  return `<div class="doc-card">
+    <div class="doc-top"><span class="doc-fi">${fileSvg(r.fmt)}</span><b class="doc-name" title="${r.title}">${r.title}</b><button class="doc-more" onclick="toast('${r.title} — options (placeholder)')">⋮</button></div>
+    <div class="doc-prev" onclick="go('#/resource/${r.id}')">${docPreview(r)}</div>
+    <div class="doc-foot"><span class="pw-av" style="width:26px;height:26px;font-size:10px">${m.ini}</span><span class="wf-note" style="text-transform:none;letter-spacing:0">${m.name} · ${m.date}</span></div>
+    ${editing?`<div class="doc-editing"><span class="edot"></span>${editing}</div>`:''}
+  </div>`;
 }
 function filterSidebar(){
   const box=items=>items.map(i=>`<label class="fopt"><input type="checkbox"> ${i}</label>`).join("");
@@ -944,25 +979,37 @@ screens.library=()=>shell("#/library",[{label:"Home",href:"#/home"},{label:"Reso
       ${filterSidebar()}
       <div>
         <div class="searchfield" style="margin-bottom:16px"><span class="icon-box">🔍</span><input placeholder="Search resources — e.g. sacred groves, tanks…"><a class="btn sm" onclick="openSearch()">Search</a></div>
-        <div class="grid g2">${RES.map(resourceCard).join("")}</div>
+        <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px">${RES.map(resourceCard).join("")}</div>
       </div>
     </div>
   </section>
 `);
 
-screens.resource=(p)=>{const r=resById(p.id)||RES[0];
+screens.resource=(p)=>{const r=resById(p.id)||RES[0];const i=resIndex(r);const m=resMeta(i);
   return shell("#/library",[{label:"Home",href:"#/home"},{label:"Resources",href:"#/library"},{label:r.title}],`
   <section class="section">
-    <div class="grid" style="grid-template-columns:260px 1fr;gap:24px;align-items:start">
-      <div class="ph-img" style="aspect-ratio:3/4;min-height:0" onclick="toast('Preview (placeholder)')">Cover — placeholder</div>
-      <div><div class="eyebrow">${r.type}</div><h2>${r.title}</h2><p class="muted">${r.purpose}</p>
-        <div class="meta-tags mt12"><span class="tag">${r.theme}</span><span class="tag">${r.audience}</span><span class="tag">${r.fmt}</span><span class="tag">${r.lang}</span></div>
-        <div class="row mt16"><a class="btn primary" onclick="toast('Download (placeholder)')">↓ Download</a><a class="btn" onclick="toast('Preview (placeholder)')">Preview</a></div>
-        <div class="ph-line w90 mt24"></div><div class="ph-line w80"></div><div class="ph-line w60"></div></div>
+    <div class="between">
+      <a class="btn" onclick="go('#/library')">← Resources</a>
+      <div class="row" style="gap:8px"><a class="btn sm" onclick="toast('Share (placeholder)')">⇪ Share</a><a class="btn sm primary" onclick="toast('Download — ${r.title} (placeholder)')">↓ Download</a></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1.7fr 1fr;gap:24px;align-items:start;margin-top:16px">
+      <div class="panel docview">
+        <div class="between"><div class="wf-note">${r.fmt} preview</div><a class="btn sm" onclick="toast('Full screen (placeholder)')">⤢</a></div>
+        <div class="docview-body"><div style="text-align:center"><div class="docview-ic">${fileSvg(r.fmt)}</div><div style="font-size:14px;color:var(--ink-2)">${r.title}</div></div></div>
+      </div>
+      <div class="panel">
+        <h3 style="margin:0 0 12px;font-size:16px">Document Details</h3>
+        <div class="detail-blk"><div class="k">Theme</div><div class="v-lg">${r.theme}</div></div>
+        <div class="detail-blk"><div class="k">File Type</div><div><span class="tag">${fileKind(r.fmt)}</span></div></div>
+        <div class="detail-blk"><div class="k">Category</div><div class="v-lg">${r.type}</div></div>
+        <div class="detail-blk"><div class="k">Visibility</div><div class="v-lg">Public</div></div>
+        <div class="detail-blk"><div class="k">File Size</div><div class="v-lg">${m.size}</div></div>
+        <div class="detail-blk"><div class="k">Version</div><div class="v-lg mono">v1.0</div></div>
+        <div class="detail-blk"><div class="k">Uploaded By</div><div class="row" style="gap:10px;align-items:center"><span class="pw-av">${m.ini}</span><div><b style="font-size:14px">${m.name}</b><div class="wf-note" style="text-transform:none;letter-spacing:0">${m.date}</div></div></div></div>
+        <div class="detail-blk"><div class="k">Tags</div><div class="meta-tags">${r.tags.map(t=>`<span class="tag">${t}</span>`).join('')}<span class="tag">${r.fmt}</span></div></div>
+      </div>
     </div>
   </section>
-  <section class="section"><div class="between"><h2 class="mb0" style="font-size:18px">Related resources</h2><a class="btn sm" onclick="go('#/library')">All resources →</a></div>
-    <div class="grid g3 mt12">${RES.slice(0,3).map(resourceCard).join("")}</div></section>
 `);};
 
 screens.contribute=(p)=>{const kind=(p&&p.kind==='rule')?'rule':'name';
