@@ -938,7 +938,7 @@ screens.story=(p)=>{const s=storyById(p.id)||STORIES[0];
 
 screens.library=()=>shell("#/library",[{label:"Home",href:"#/home"},{label:"Resources"}],`
   <section class="section">
-    <div class="eyebrow">Knowledge repository</div><h2>Resources</h2>
+    <h2>Resources</h2>
     <p class="sub">Research, publications, infographics and datasets on India's commons — search, filter and download.</p>
     <div class="layout-side">
       ${filterSidebar()}
@@ -968,10 +968,10 @@ screens.resource=(p)=>{const r=resById(p.id)||RES[0];
 screens.contribute=(p)=>{const kind=(p&&p.kind==='rule')?'rule':'name';
   return shell("#/contribute",[{label:"Home",href:"#/home"},{label:"Contribute"}],`
   <section class="section">
-    <div class="eyebrow">Crowdsourcing Web module · SRS §2.1.3.2 / §2.1.3.3</div><h2>Contribute a Common</h2>
+    <h2>Contribute a Common</h2>
     <p class="sub">Two crowdsourcing flows — submit a Local <strong>Name</strong> (§2.1.3.2) or a Local <strong>Rule</strong> (§2.1.3.3) for a common near you. Every submission is reviewed before it appears on the map.</p>
     <div class="wf-note" style="margin-bottom:8px">Crowdsourcing steps</div>
-    <div class="pathway" style="margin-bottom:20px">${[["Contributor Registration","#/login"],["Submit "+(kind==='rule'?'Local Rule':'Local Name'),"contrib-form"],["GPS Location","fld-gps"],["State / District","fld-state"],["Review workflow","#/admin"],["Admin approval","#/admin"],["Display on Map","#/home"]].map((s,i,a)=>`<div class="pw-step ${i===1?'active':''}" onclick="pwGo('${s[1]}')"><div class="num">${String(i+1).padStart(2,'0')}</div><div class="nm">${s[0]}</div></div>${i<a.length-1?'<div class="pw-arrow">→</div>':''}`).join("")}</div>
+    <div class="pathway" style="margin-bottom:20px">${[["Submit "+(kind==='rule'?'Local Rule':'Local Name'),"contrib-form"],["GPS Location","fld-gps"],["State / District","fld-state"],["Review workflow","#/admin"],["Admin approval","#/admin"],["Display on Map","#/home"]].map((s,i,a)=>`<div class="pw-step ${i===0?'active':''}" onclick="pwGo('${s[1]}')"><div class="num">${String(i+1).padStart(2,'0')}</div><div class="nm">${s[0]}</div></div>${i<a.length-1?'<div class="pw-arrow">→</div>':''}`).join("")}</div>
     <div class="grid" style="grid-template-columns:1fr 300px;gap:24px;align-items:start">
       <div class="panel" id="contrib-form">
         <div class="stepbar"><i class="on"></i><i class="on"></i><i></i><i></i></div>
@@ -992,7 +992,6 @@ screens.contribute=(p)=>{const kind=(p&&p.kind==='rule')?'rule':'name';
       </div>
     </div>
   </section>
-  <section class="section"><div class="eyebrow">Review workflow · Admin moderation</div><h2 style="font-size:18px">Pending → Reviewed → Approved → Published</h2>${workflowFlow()}<div class="wf-note mt12">Approved submissions appear on the map and relevant pages.</div></section>
 `);};
 
 screens.admin=()=>shell("#/admin",[{label:"Home",href:"#/home"},{label:"Moderation"}],`
@@ -1251,7 +1250,7 @@ function render(){
   const {parts,params}=parseHash();
   const name=parts[0]||"home";
   let html;
-  if(name==="contribute" && !roleCan('contribute')){ html=gateScreen('Contribute','Sign in as a Registered User or higher to contribute a local name or rule.'); }
+  if(name==="contribute" && !roleCan('contribute')){ location.hash='#/login'; return; }
   else if(name==="admin" && !roleCan('moderate')){ html=gateScreen('Moderation','Sign in as a Moderator or Admin to open the moderation portal.'); }
   else if(name==="type"){params.id=parts[1];html=screens.type(params);}
   else if(name==="story"){params.id=parts[1];html=screens.story(params);}
