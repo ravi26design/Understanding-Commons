@@ -1031,10 +1031,6 @@ screens.commoning=()=>{const CH=[
   <section class="section">
     <div class="panel"><p class="muted" style="margin:0">While all this may seem like a fleeting memory of days gone by, a closer look around us might just reveal that some of these practices are very much alive — very much a part of our lives and lifestyles. As we navigate modern life, it is essential to recognise and celebrate this enduring spirit of commoning, and foster collective responsibility, sustainability and shared well-being for present and future generations.</p></div>
   </section>
-  <section class="section">
-    <div class="grid g3">${STORIES.map(s=>`<div class="card click" onclick="go('#/story/${s.id}')"><div class="wf-note">${s.state} · ${s.system}</div><h3 style="font-size:14px">${s.title}</h3><p>${s.excerpt}</p><div class="cta"><a class="btn sm">Read the Story →</a></div></div>`).join("")}</div>
-  </section>
-  <section class="section"><div class="row" style="gap:10px"><a class="btn" onclick="go('#/home')">Return to overview</a><a class="btn primary" onclick="go('#/resource/our-commons')">Read the report →</a></div></section>
 `);};
 
 screens.story=(p)=>{const s=storyById(p.id)||STORIES[0];
