@@ -564,7 +564,7 @@ const SIG=[
      ["Living soils","Grazing lands and woodlands keep soils fertile and support pollinators."]],
    states:["Nagaland — community forests","Tamil Nadu — cascading tanks","Rajasthan — oran groves"],
    link:["Sacred Groves infographic","#/resource/sacred-groves"]},
-  {key:"Socio-Cultural",tag:"Socio-Cultural Significance",
+  {key:"Social and Cultural",tag:"Social and Cultural Significance",
    lead:"Commons hold identity, faith and shared knowledge — the social fabric that binds communities together.",
    map:"Socio-cultural layer — sacred & shared landscapes",
    mapTitle:"Density of sacred groves & shared spaces by district",
@@ -592,7 +592,7 @@ const SIG=[
      ["Local enterprise","Honey, bamboo, craft and eco-tourism build on the commons."]],
    states:["Gujarat — grazing commons","Kerala — coastal fisheries","Madhya Pradesh — NTFP forests"],
    link:["Grazing Commons brief","#/resource/grazing-brief"]},
-  {key:"Threats & Challenges",tag:"Threats & Challenges",
+  {key:"Threats and Challenges",tag:"Threats and Challenges",
    lead:"Commons are under pressure — shrinking, degrading and slipping out of community control across states.",
    map:"Pressure layer — encroachment, degradation & tenure gaps",
    mapTitle:"Commons under pressure by district",
@@ -612,7 +612,7 @@ const SIG_STATES=["Andhra Pradesh","Gujarat","Kerala","Madhya Pradesh","Meghalay
 /* ============ NAV / SHELL ============ */
 const NAV=[
   {id:"#/home",label:"Home"},{id:"#/what",label:"What are Commons"},{id:"#/types",label:"Types of Commons"},
-  {id:"#/commoning",label:"Commoning"},
+  {id:"#/significance",label:"Significance of Commons"},{id:"#/commoning",label:"Commoning"},
   {id:"#/library",label:"Resources"},{id:"#/contribute",label:"Contribute"}
 ];
 function header(active){
@@ -744,7 +744,7 @@ screens.home=()=>shell("#/home",null,`
     <div class="grid" style="grid-template-columns:1.3fr 1fr;gap:24px;align-items:center">
       <div>
         <div class="eyebrow">Introductory Paragraph · SRS §2.1.1</div>
-        <h1>Our shared inheritance, our shared responsibility</h1>
+        <h1>Our shared inheritance, cared for together</h1>
         <p class="lead">An educational module that introduces the idea of Commons, their diverse local names and significance, and the acts of commoning that sustain them across India.</p>
         <div class="row"><a class="btn primary" onclick="go('#/what')">Start exploring →</a><a class="btn" onclick="go('#/contribute')">Contribute local knowledge</a></div>
         <div class="wf-note mt16">Two ways in — <strong>learn</strong> (What → Types → Significance → Commoning) or <strong>participate</strong> (Contribute · Resources)</div>
@@ -948,7 +948,27 @@ screens.significance=()=>shell("#/significance",[{label:"Home",href:"#/home"},{l
   <section class="section">
     <div class="eyebrow">Significance of Commons · SRS §2.1.4</div><h2>Significance of Commons</h2>
     <p class="sub">Why commons matter — the environmental services they provide and the ecological, social, cultural and economic value they add to people's lives across geographies, alongside the threats they face. Explored through four thematic, state-wise maps.</p>
-    <div class="sig-hint"><span class="h"><b>1</b> Pick a theme</span><span class="h"><b>2</b> Read the map &amp; legend</span><span class="h"><b>3</b> Explore by state</span></div>
+    <div class="hero">
+      <div class="grid" style="grid-template-columns:1.1fr 1fr;gap:24px;align-items:center">
+        <div>
+          <div class="wf-note" style="margin-bottom:12px">On this page</div>
+          <div style="font-size:15px;line-height:1.85">
+            <b style="font-size:16px">1 · Significance</b>
+            <div style="padding-left:20px;color:var(--ink-2)">a · Ecological<br>b · Social and Cultural<br>c · Economic</div>
+            <b style="display:block;margin-top:14px;font-size:16px">2 · Threats and Challenges</b>
+          </div>
+        </div>
+        <div class="lscape" style="min-height:250px;border:1px solid var(--line);border-radius:var(--radius);background:#fff">
+          <img src="significance-map.png" alt="Significance — India relief map" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <div class="ph-img" style="display:none;position:absolute;inset:0;border:none;border-radius:0;flex-direction:column;gap:8px">
+            <div class="icon-box" style="width:42px;height:42px;font-size:22px">＋</div>
+            <div style="font-weight:600;color:var(--ink-2)">Add India relief map</div>
+            <div class="wf-note">Geonode-style topographic map · drop file as significance-map.png</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sig-hint" style="margin-top:20px"><span class="h"><b>1</b> Pick a theme</span><span class="h"><b>2</b> Read the map &amp; legend</span><span class="h"><b>3</b> Explore by state</span></div>
     <div class="tabs sig-tabs">${SIG.map((s,i)=>`<span class="tab ${i===0?'active':''}" onclick="sigTab(${i})">${s.tag}</span>`).join("")}</div>
     <div id="sig-panel">${sigPanelHTML(0)}</div>
   </section>
