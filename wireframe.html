@@ -184,6 +184,11 @@ main{min-height:60vh;padding-bottom:40px}
 /* extra wireframe bits */
 .wf-label{font-size:12px;color:var(--ink-2);font-weight:600;margin:0 0 6px;display:block}
 .wf-field{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);padding:10px 12px;color:var(--ink-3);font-size:13px;display:flex;align-items:center;gap:8px}
+.wf-in{width:100%;border:1px solid var(--line-2);border-radius:var(--radius-sm);background:var(--panel);padding:10px 12px;font:inherit;font-size:13px;color:var(--ink)}
+.wf-in::placeholder{color:var(--ink-4)}
+.wf-in:focus{outline:none;border-color:var(--ink-3);box-shadow:0 0 0 3px rgba(23,23,23,.06)}
+textarea.wf-in{min-height:74px;resize:vertical}
+select.wf-in{cursor:pointer}
 .wf-field.area{min-height:64px;align-items:flex-start}
 .field-block{margin-bottom:14px}
 .stepbar{display:flex;gap:6px;margin-bottom:18px}
@@ -1100,24 +1105,37 @@ screens.resource=(p)=>{const r=resById(p.id)||RES[0];const i=resIndex(r);const m
   </section>
 `);};
 
-screens.contribute=(p)=>{const kind=(p&&p.kind==='rule')?'rule':'name';
+screens.contribute=(p)=>{
+  const kind=(p&&p.kind==='rule')?'rule':'name';
+  if(p&&p.submitted){
+    const isRule=p.submitted==='rule';
+    return shell("#/contribute",[{label:"Home",href:"#/home"},{label:"Contribute"},{label:"Submitted"}],`
+    <section class="section" style="max-width:620px;margin:0 auto;text-align:center">
+      <div style="width:66px;height:66px;border-radius:50%;background:var(--fill);border:1px solid var(--line-2);display:grid;place-items:center;margin:20px auto 16px;font-size:30px">✓</div>
+      <h2>Submission received</h2>
+      <p class="sub" style="margin:8px auto 22px">Thank you! Your Local ${isRule?'Rule':'Name'} has been submitted and is now <strong>Pending</strong>. A reviewer will verify the details, an admin will approve it, and then it appears on the map. You can track its status in My Contributions.</p>
+      <div class="flow" style="justify-content:center"><div class="node strong">Pending</div><div class="arw">→</div><div class="node">Reviewed</div><div class="arw">→</div><div class="node">Approved</div><div class="arw">→</div><div class="node">Published</div></div>
+      <div class="row" style="justify-content:center;gap:10px;margin-top:24px"><a class="btn primary" onclick="go('#/contributions')">View my contributions</a><a class="btn" onclick="go('#/contribute')">Submit another</a></div>
+    </section>`);
+  }
+  const steps=[["Submit "+(kind==='rule'?'Local Rule':'Local Name'),"contrib-form",1],["GPS location","fld-gps",1],["State / District","fld-state",1],["Review by moderator","",0],["Admin approval","",0],["Live on the map","",0]];
   return shell("#/contribute",[{label:"Home",href:"#/home"},{label:"Contribute"}],`
   <section class="section">
     <h2>Contribute a Common</h2>
     <p class="sub">Know a shared forest, grazing land, tank or grove near you? Help put it on the map. Add its <strong>local name</strong> — what your community calls it — or a <strong>local rule</strong> you follow to care for it. Every contribution is checked by a reviewer before it goes live, so the map stays trustworthy.</p>
-    <div class="wf-note" style="margin-bottom:8px">Crowdsourcing steps</div>
-    <div class="pathway" style="margin-bottom:20px">${[["Submit "+(kind==='rule'?'Local Rule':'Local Name'),"contrib-form"],["GPS Location","fld-gps"],["State / District","fld-state"],["Review workflow","#/admin"],["Admin approval","#/admin"],["Display on Map","#/home"]].map((s,i,a)=>`<div class="pw-step ${i===0?'active':''}" onclick="pwGo('${s[1]}')"><div class="num">${String(i+1).padStart(2,'0')}</div><div class="nm">${s[0]}</div></div>${i<a.length-1?'<div class="pw-arrow">→</div>':''}`).join("")}</div>
+    <div class="wf-note" style="margin-bottom:8px">How it works</div>
+    <div class="pathway" style="margin-bottom:20px">${steps.map((s,i,a)=>`<div class="pw-step ${i===0?'active':''}" onclick="${s[2]?"pwGo('"+s[1]+"')":"toast('"+s[0]+" — happens after you submit')"}"><div class="num">${String(i+1).padStart(2,'0')}</div><div class="nm">${s[0]}</div></div>${i<a.length-1?'<div class="pw-arrow">→</div>':''}`).join("")}</div>
     <div class="grid" style="grid-template-columns:1fr 300px;gap:24px;align-items:start">
       <div class="panel" id="contrib-form">
-        <div class="stepbar"><i class="on"></i><i class="on"></i><i></i><i></i></div>
-        <div class="row" style="gap:10px;margin-bottom:14px"><a class="btn block" style="flex:1;${kind==='name'?'border-width:1.5px':''}" onclick="go('#/contribute?kind=name')">${kind==='name'?'◉':'○'} Local Name</a><a class="btn block" style="flex:1;${kind==='rule'?'border-width:1.5px':''}" onclick="go('#/contribute?kind=rule')">${kind==='rule'?'◉':'○'} Local Rule</a></div>
-        <div class="field-block"><span class="wf-label">Name of the common *</span><div class="wf-field">Type here…</div></div>
-        <div class="grid g2"><div class="field-block"><span class="wf-label">Type *</span><div class="wf-field">▾ Select</div></div><div class="field-block"><span class="wf-label">Local term *</span><div class="wf-field">Type here…</div></div></div>
-        <div class="field-block"><span class="wf-label">${kind==='rule'?'Describe the local rule':'Describe the common'} *</span><div class="wf-field area">${kind==='rule'?'Which rule, who follows it, how it is enforced…':'Who uses it, how it is governed…'}</div></div>
-        <div class="grid g2" id="fld-state"><div class="field-block"><span class="wf-label">State *</span><div class="wf-field">▾ Select</div></div><div class="field-block"><span class="wf-label">District *</span><div class="wf-field">▾ Select</div></div></div>
-        <div class="field-block" id="fld-gps"><span class="wf-label">GPS location *</span><div class="wf-field">◎ 18.52° N, 73.86° E — use my location</div></div>
-        <div class="field-block"><span class="wf-label">Photos</span><div class="ph-img" style="min-height:70px" onclick="toast('Upload photos (placeholder)')">⇧ Drop photos — scanned · stored on NAS (placeholder)</div></div>
-        <div class="between"><a class="btn" onclick="toast('Back (placeholder)')">Back</a><a class="btn primary" onclick="toast('Submitted — status: Pending')">Submit for review →</a></div>
+        <span class="wf-label">What are you adding?</span>
+        <div class="row" style="gap:10px;margin:6px 0 18px"><a class="btn block" style="flex:1;${kind==='name'?'border-color:var(--ink);border-width:1.5px':''}" onclick="go('#/contribute?kind=name')">${kind==='name'?'◉':'○'} Local Name</a><a class="btn block" style="flex:1;${kind==='rule'?'border-color:var(--ink);border-width:1.5px':''}" onclick="go('#/contribute?kind=rule')">${kind==='rule'?'◉':'○'} Local Rule</a></div>
+        <div class="field-block"><span class="wf-label">Name of the common *</span><input class="wf-in" placeholder="e.g. Devrai near the temple"></div>
+        <div class="grid g2"><div class="field-block"><span class="wf-label">Type of common *</span><select class="wf-in">${TYPES.map(t=>`<option>${t.name}</option>`).join("")}</select></div><div class="field-block"><span class="wf-label">Local term *</span><input class="wf-in" placeholder="e.g. Devrai, Oran, Eri…"></div></div>
+        <div class="field-block"><span class="wf-label">${kind==='rule'?'Describe the local rule':'Describe the common'} *</span><textarea class="wf-in" placeholder="${kind==='rule'?'Which rule, who follows it, how it is enforced…':'Who uses it, how it is governed…'}"></textarea></div>
+        <div class="grid g2" id="fld-state"><div class="field-block"><span class="wf-label">State *</span><select class="wf-in"><option>Select state…</option><option>Maharashtra</option><option>Rajasthan</option><option>Kerala</option><option>Tamil Nadu</option><option>Odisha</option><option>Gujarat</option></select></div><div class="field-block"><span class="wf-label">District *</span><select class="wf-in"><option>Select district…</option><option>Pune</option><option>Kolhapur</option><option>Sindhudurg</option></select></div></div>
+        <div class="field-block" id="fld-gps"><span class="wf-label">GPS location *</span><div class="wf-field" onclick="toast('Location detected (placeholder)')">◎ 18.52° N, 73.86° E — use my location</div></div>
+        <div class="field-block"><span class="wf-label">Photos</span><div class="ph-img" style="min-height:70px" onclick="toast('Upload photos (placeholder)')">⇧ Drop photos — scanned · stored on secure NAS</div></div>
+        <div class="between"><a class="btn" onclick="go('#/home')">Cancel</a><a class="btn primary" onclick="go('#/contribute?submitted=${kind}')">Submit for review →</a></div>
       </div>
       <div class="stack">
         <div class="panel"><div class="wf-note">What happens next</div>
