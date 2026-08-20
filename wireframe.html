@@ -324,6 +324,15 @@ select.wf-in{cursor:pointer}
 .sig-hint .h{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-2);background:var(--panel);border:1px solid var(--line-2);border-radius:20px;padding:5px 12px}
 .sig-hint .h b{background:var(--active);color:#fff;border-radius:50%;width:17px;height:17px;display:inline-grid;place-items:center;font-size:10px;font-weight:700}
 .tag.sigst{cursor:pointer}
+/* significance: filterable map */
+.sig-filters{display:flex;flex-direction:column;gap:6px}
+.sig-fgroup{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin:6px 0 2px}
+.sig-fbtn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line-2);background:var(--panel);border-radius:var(--radius-sm);padding:10px 12px;font:inherit;font-size:13px;color:var(--ink-2);cursor:pointer;transition:background .12s,border-color .12s}
+.sig-fbtn:hover{background:var(--fill)}
+.sig-fbtn i{width:12px;height:12px;border-radius:3px;background:var(--line);border:1px solid var(--line-2);flex:none}
+.sig-fbtn.active{background:var(--active);border-color:var(--active);color:#fff;font-weight:600}
+.sig-fbtn.active i{background:#fff;border-color:#fff}
+.sig-hero-badge{position:absolute;top:10px;left:10px;background:var(--active);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;z-index:2}
 .tag.sigst.active{background:var(--active);color:#fff;border-color:var(--active)}
 
 footer.site{background:var(--panel);border-top:1px solid var(--line);margin-top:20px}
@@ -937,27 +946,34 @@ screens.significance=()=>shell("#/significance",[{label:"Home",href:"#/home"},{l
     <div class="eyebrow">Significance of Commons · SRS §2.1.4</div><h2>Significance of Commons</h2>
     <p class="sub">Why commons matter — the environmental services they provide and the ecological, social, cultural and economic value they add to people's lives across geographies, alongside the threats they face. Explored through four thematic, state-wise maps.</p>
     <div class="hero">
-      <div class="grid" style="grid-template-columns:1.1fr 1fr;gap:24px;align-items:center">
+      <div class="grid" style="grid-template-columns:270px 1fr;gap:28px;align-items:stretch">
         <div>
-          <div class="wf-note" style="margin-bottom:12px">On this page</div>
-          <div style="font-size:15px;line-height:1.85">
-            <b style="font-size:16px">1 · Significance</b>
-            <div style="padding-left:20px;color:var(--ink-2)">a · Ecological<br>b · Social and Cultural<br>c · Economic</div>
-            <b style="display:block;margin-top:14px;font-size:16px">2 · Threats and Challenges</b>
+          <div class="wf-note" style="margin-bottom:10px">Filter the map by category</div>
+          <div class="sig-filters" id="sig-filters">
+            <div class="sig-fgroup">1 · Significance</div>
+            <button class="sig-fbtn active" onclick="sigMapFilter(0,this)"><i></i>Ecological</button>
+            <button class="sig-fbtn" onclick="sigMapFilter(1,this)"><i></i>Social and Cultural</button>
+            <button class="sig-fbtn" onclick="sigMapFilter(2,this)"><i></i>Economic</button>
+            <div class="sig-fgroup">2 · Threats and Challenges</div>
+            <button class="sig-fbtn" onclick="sigMapFilter(3,this)"><i></i>Threats and Challenges</button>
           </div>
+          <div class="wf-note mt12">◉ Select a category to filter the map, legend and details below.</div>
         </div>
-        <div class="lscape" style="min-height:250px;border:1px solid var(--line);border-radius:var(--radius);background:#fff">
-          <img src="significance-map.png" alt="Significance — India relief map" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-          <div class="ph-img" style="display:none;position:absolute;inset:0;border:none;border-radius:0;flex-direction:column;gap:8px">
-            <div class="icon-box" style="width:42px;height:42px;font-size:22px">＋</div>
-            <div style="font-weight:600;color:var(--ink-2)">Add India relief map</div>
-            <div class="wf-note">Geonode-style topographic map · drop file as significance-map.png</div>
+        <div class="sig-map" style="margin:0">
+          <div class="sig-map-top"><span id="sig-hero-title">${SIG[0].mapTitle}</span><a onclick="toast('Open map at full size (placeholder)')">Full size →</a></div>
+          <div class="sig-map-canvas lscape" style="min-height:320px;background:#fff">
+            <span class="sig-hero-badge" id="sig-hero-badge">Showing: ${SIG[0].key}</span>
+            <img src="significance-map.png" alt="India relief map" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+            <div class="ph-img" style="display:none;position:absolute;inset:0;border:none;border-radius:0;flex-direction:column;gap:8px">
+              <div class="icon-box" style="width:42px;height:42px;font-size:22px">＋</div>
+              <div style="font-weight:600;color:var(--ink-2)">Add India relief map</div>
+              <div class="wf-note">Geonode-style topographic map · drop file as significance-map.png</div>
+            </div>
           </div>
+          <div class="sig-legend"><span class="wf-note" id="sig-hero-legend">${SIG[0].key} intensity</span><span class="sig-scale"><i></i><i></i><i></i><i></i><i></i></span><span class="wf-note">Low → High</span></div>
         </div>
       </div>
     </div>
-    <div class="sig-hint" style="margin-top:20px"><span class="h"><b>1</b> Pick a theme</span><span class="h"><b>2</b> Read the map &amp; legend</span><span class="h"><b>3</b> Explore by state</span></div>
-    <div class="tabs sig-tabs">${SIG.map((s,i)=>`<span class="tab ${i===0?'active':''}" onclick="sigTab(${i})">${s.tag}</span>`).join("")}</div>
     <div id="sig-panel">${sigPanelHTML(0)}</div>
   </section>
   <section class="section">
@@ -1465,7 +1481,15 @@ function sigPanelHTML(i){const s=SIG[i];return `
   <div class="wf-note mt16" style="margin-bottom:6px">What it looks like on the ground</div>
   <div class="grid g2">${s.points.map(p=>`<div class="card"><h3 style="font-size:14px">${p[0]}</h3><p>${p[1]}</p></div>`).join("")}</div>
 `;}
-function sigTab(i){document.querySelectorAll('.sig-tabs .tab').forEach((t,ti)=>t.classList.toggle('active',ti===i));const el=document.getElementById('sig-panel');if(el)el.innerHTML=sigPanelHTML(i);}
+function sigMapFilter(i,el){const s=SIG[i];
+  document.querySelectorAll('#sig-filters .sig-fbtn').forEach(b=>b.classList.remove('active'));
+  const btns=document.querySelectorAll('#sig-filters .sig-fbtn');
+  if(el){el.classList.add('active');} else if(btns[i]){btns[i].classList.add('active');}
+  const t=document.getElementById('sig-hero-title');if(t)t.textContent=s.mapTitle;
+  const bd=document.getElementById('sig-hero-badge');if(bd)bd.textContent='Showing: '+s.key;
+  const lg=document.getElementById('sig-hero-legend');if(lg)lg.textContent=s.key+' intensity';
+  const p=document.getElementById('sig-panel');if(p)p.innerHTML=sigPanelHTML(i);}
+function sigTab(i){sigMapFilter(i);}
 function sigState(i,si,el){const c=document.getElementById('sig-state-card');if(c)c.innerHTML=`<h5>${SIG_STATES[si]} · ${SIG[i].key}</h5><p>State-wise ${SIG[i].key.toLowerCase()} content for ${SIG_STATES[si]}, drawn from the Commons Matrix (placeholder).</p>`;if(el){el.parentNode.querySelectorAll('.sigst').forEach(x=>x.classList.remove('active'));el.classList.add('active');}}
 let toastTimer;
 function toast(msg){let t=document.getElementById("wf-toast");
