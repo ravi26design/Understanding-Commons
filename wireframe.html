@@ -1084,7 +1084,7 @@ screens.contribute=(p)=>{const kind=(p&&p.kind==='rule')?'rule':'name';
   return shell("#/contribute",[{label:"Home",href:"#/home"},{label:"Contribute"}],`
   <section class="section">
     <h2>Contribute a Common</h2>
-    <p class="sub">Two crowdsourcing flows — submit a Local <strong>Name</strong> (§2.1.3.2) or a Local <strong>Rule</strong> (§2.1.3.3) for a common near you. Every submission is reviewed before it appears on the map.</p>
+    <p class="sub">Know a shared forest, grazing land, tank or grove near you? Help put it on the map. Add its <strong>local name</strong> — what your community calls it — or a <strong>local rule</strong> you follow to care for it. Every contribution is checked by a reviewer before it goes live, so the map stays trustworthy.</p>
     <div class="wf-note" style="margin-bottom:8px">Crowdsourcing steps</div>
     <div class="pathway" style="margin-bottom:20px">${[["Submit "+(kind==='rule'?'Local Rule':'Local Name'),"contrib-form"],["GPS Location","fld-gps"],["State / District","fld-state"],["Review workflow","#/admin"],["Admin approval","#/admin"],["Display on Map","#/home"]].map((s,i,a)=>`<div class="pw-step ${i===0?'active':''}" onclick="pwGo('${s[1]}')"><div class="num">${String(i+1).padStart(2,'0')}</div><div class="nm">${s[0]}</div></div>${i<a.length-1?'<div class="pw-arrow">→</div>':''}`).join("")}</div>
     <div class="grid" style="grid-template-columns:1fr 300px;gap:24px;align-items:start">
