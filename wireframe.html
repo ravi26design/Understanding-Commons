@@ -981,25 +981,6 @@ screens.significance=()=>shell("#/significance",[{label:"Home",href:"#/home"},{l
     </div>
     <div id="sig-panel">${sigPanelHTML(0)}</div>
   </section>
-  <section class="section">
-    <div class="eyebrow">From value to action</div><h2 style="font-size:18px">Recognise the value → see the pressure → act to protect</h2>
-    <p class="sub">The significance of commons only holds if they are protected. Follow the flow from understanding their value to taking part.</p>
-    <div class="flow mt8">
-      <div class="node strong" onclick="sigTab(0);pwGo('sig-panel')">Recognise value<span class="sub2">eco · social · economic</span></div><div class="arw">→</div>
-      <div class="node" onclick="sigTab(3);pwGo('sig-panel')">See the pressure<span class="sub2">threats &amp; challenges</span></div><div class="arw">→</div>
-      <div class="node strong" onclick="go('#/contribute')">Act to protect<span class="sub2">names · rules · stories</span></div>
-    </div>
-    <div class="grid g3 mt16">
-      <div class="card click" onclick="sigTab(3);pwGo('sig-panel')"><div class="wf-note">Step 2 · the pressure</div><h3 style="font-size:14px">See the threats</h3><p>Encroachment, privatisation, degradation and weak governance — mapped state by state.</p><div class="cta"><a class="btn sm">View threats →</a></div></div>
-      <div class="card click" onclick="go('#/commoning')"><div class="wf-note">Ground realities</div><h3 style="font-size:14px">Read commoning stories</h3><p>How communities keep their commons alive, in their own words.</p><div class="cta"><a class="btn sm">Read stories →</a></div></div>
-      <div class="card click" onclick="go('#/contribute')"><div class="wf-note">Step 3 · take part</div><h3 style="font-size:14px">Contribute &amp; protect</h3><p>Add a local name or rule with GPS — reviewed before it goes on the map.</p><div class="cta"><a class="btn sm">Contribute →</a></div></div>
-    </div>
-  </section>
-  <section class="section">
-    <div class="between"><h2 class="mb0" style="font-size:18px">Related stories &amp; resources</h2><a class="btn sm" onclick="go('#/library')">Resource Library →</a></div>
-    <div class="grid g3 mt12">${STORIES.map(s=>`<div class="card click" onclick="go('#/story/${s.id}')"><h3 style="font-size:14px">${s.title}</h3><div class="meta-tags"><span class="tag">${s.system}</span><span class="tag">${s.state}</span></div><div class="cta"><a class="btn sm">Read →</a></div></div>`).join("")}</div>
-  </section>
-  <section class="section"><div class="callout"><div class="txt"><strong>Explore the underlying data</strong><span>The Commons Matrix (Alphabetical for states) holds the state- and theme-wise content behind these maps.</span></div><a class="btn primary" onclick="go('#/resource/commons-matrix')">Open Commons Matrix →</a></div></section>
 `);
 
 screens.commoning=()=>{const CH=[
