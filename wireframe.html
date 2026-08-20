@@ -797,12 +797,6 @@ screens.home=()=>shell("#/home",null,`
   </section>
 
 
-  <section class="section">
-    <div class="between"><div><div class="eyebrow">See it on the ground</div><h2 class="mb0">Commoning in Action</h2></div><a class="btn sm" onclick="go('#/commoning')">All stories →</a></div>
-    <p class="sub">Short field stories showing what commoning looks like in practice.</p>
-    <div class="grid g3">${STORIES.map(s=>`<div class="card click" onclick="go('#/story/${s.id}')"><div class="ph-img" style="min-height:80px">Field photo — placeholder</div><h3 style="font-size:14px">${s.title}</h3><div class="meta-tags"><span class="tag">${s.system}</span><span class="tag">${s.state}</span></div><div class="cta"><a class="btn sm">Read the Story →</a></div></div>`).join("")}</div>
-  </section>
-
 `);
 
 screens.what=()=>{
