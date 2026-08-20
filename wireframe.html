@@ -803,21 +803,6 @@ screens.home=()=>shell("#/home",null,`
     <div class="grid g3">${STORIES.map(s=>`<div class="card click" onclick="go('#/story/${s.id}')"><div class="ph-img" style="min-height:80px">Field photo — placeholder</div><h3 style="font-size:14px">${s.title}</h3><div class="meta-tags"><span class="tag">${s.system}</span><span class="tag">${s.state}</span></div><div class="cta"><a class="btn sm">Read the Story →</a></div></div>`).join("")}</div>
   </section>
 
-  <section class="section">
-    <div class="eyebrow">Sample user flow · SRS §8</div><h2>From exploring to published</h2>
-    <p class="sub">The end-to-end crowdsourcing journey defined in the SRS.</p>
-    <div class="flow">
-      <div class="node strong" onclick="go('#/what')">Visitor explores content<span class="sub2">public</span></div><div class="arw">→</div>
-      <div class="node" onclick="go('#/contribute')">Submits local commons info<span class="sub2">contributor</span></div><div class="arw">→</div>
-      <div class="node" onclick="go('#/admin')">Reviewer verifies<span class="sub2">moderator</span></div><div class="arw">→</div>
-      <div class="node" onclick="go('#/admin')">Admin publishes<span class="sub2">admin</span></div><div class="arw">→</div>
-      <div class="node strong" onclick="go('#/types')">Displayed on website<span class="sub2">on the map</span></div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="callout"><div class="txt"><strong>Contribute the commons you know</strong><span>Add a local name or rule — reviewed before it appears on the map.</span></div><a class="btn primary" onclick="go('#/contribute')">Become a contributor →</a></div>
-  </section>
 `);
 
 screens.what=()=>{
