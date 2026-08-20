@@ -335,6 +335,10 @@ footer.site li:hover{color:var(--ink);text-decoration:underline}
 footer .bar{border-top:1px solid var(--line-2);padding:14px 0;font-size:12px;color:var(--ink-3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 
 .overlay{position:fixed;inset:0;background:rgba(30,30,30,.35);z-index:60;display:none;align-items:flex-start;justify-content:center;padding-top:9vh}
+.modal-back{position:fixed;inset:0;background:rgba(23,23,23,.5);z-index:90;display:flex;align-items:center;justify-content:center;padding:24px}
+.modal-card{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--radius);box-shadow:var(--shadow-lg);width:min(500px,100%);padding:40px 36px 34px;text-align:center;position:relative}
+.modal-x{position:absolute;top:12px;right:14px;width:30px;height:30px;border-radius:var(--radius-sm);border:1px solid var(--line-2);background:var(--panel);color:var(--ink-2);cursor:pointer;font-size:14px;display:grid;place-items:center}
+.modal-x:hover{background:var(--fill)}
 .overlay.open{display:flex}
 .searchpanel{background:var(--panel);border:1px solid var(--ink);border-radius:var(--radius);width:min(620px,92vw);padding:20px}
 .searchpanel h3{margin:0 0 4px;font-size:18px}
@@ -1107,24 +1111,21 @@ screens.resource=(p)=>{const r=resById(p.id)||RES[0];const i=resIndex(r);const m
 
 screens.contribute=(p)=>{
   const kind=(p&&p.kind==='rule')?'rule':'name';
-  if(p&&p.submitted){
-    const isRule=p.submitted==='rule';
-    return shell("#/contribute",[{label:"Home",href:"#/home"},{label:"Contribute"},{label:"Submitted"}],`
-    <section class="section" style="max-width:620px;margin:0 auto;text-align:center">
-      <div style="width:66px;height:66px;border-radius:50%;background:var(--fill);border:1px solid var(--line-2);display:grid;place-items:center;margin:20px auto 16px;font-size:30px">✓</div>
-      <h2>Submission received</h2>
-      <p class="sub" style="margin:8px auto 22px">Thank you! Your Local ${isRule?'Rule':'Name'} has been submitted and is now <strong>Pending</strong>. A reviewer will verify the details, an admin will approve it, and then it appears on the map. You can track its status in My Contributions.</p>
-      <div class="flow" style="justify-content:center"><div class="node strong">Pending</div><div class="arw">→</div><div class="node">Reviewed</div><div class="arw">→</div><div class="node">Approved</div><div class="arw">→</div><div class="node">Published</div></div>
-      <div class="row" style="justify-content:center;gap:10px;margin-top:24px"><a class="btn primary" onclick="go('#/contributions')">View my contributions</a><a class="btn" onclick="go('#/contribute')">Submit another</a></div>
-    </section>`);
-  }
-  const steps=[["Submit "+(kind==='rule'?'Local Rule':'Local Name'),"contrib-form",1],["GPS location","fld-gps",1],["State / District","fld-state",1],["Review by moderator","",0],["Admin approval","",0],["Live on the map","",0]];
-  return shell("#/contribute",[{label:"Home",href:"#/home"},{label:"Contribute"}],`
+  const isRule=(p&&p.submitted)==='rule';
+  const modal=(p&&p.submitted)?`
+    <div class="modal-back" onclick="if(event.target===this)go('#/contribute')">
+      <div class="modal-card">
+        <button class="modal-x" onclick="go('#/contribute')">✕</button>
+        <div style="width:66px;height:66px;border-radius:50%;background:var(--fill);border:1px solid var(--line-2);display:grid;place-items:center;margin:0 auto 18px;font-size:30px">✓</div>
+        <h2 style="margin:0 0 8px">Submission received</h2>
+        <p class="sub" style="margin:0 auto 26px">Thank you! Your Local ${isRule?'Rule':'Name'} has been submitted and is now <strong>Pending</strong>. A reviewer will verify the details, an admin will approve it, and then it appears on the map. You can track its status in My Contributions.</p>
+        <div class="row" style="justify-content:center;gap:10px"><a class="btn primary" onclick="go('#/contributions')">View my contributions</a><a class="btn" onclick="go('#/contribute')">Submit another</a></div>
+      </div>
+    </div>`:'';
+  return shell("#/contribute",[{label:"Home",href:"#/home"},{label:"Contribute"}],modal+`
   <section class="section">
     <h2>Contribute a Common</h2>
     <p class="sub">Know a shared forest, grazing land, tank or grove near you? Help put it on the map. Add its <strong>local name</strong> — what your community calls it — or a <strong>local rule</strong> you follow to care for it. Every contribution is checked by a reviewer before it goes live, so the map stays trustworthy.</p>
-    <div class="wf-note" style="margin-bottom:8px">How it works</div>
-    <div class="pathway" style="margin-bottom:20px">${steps.map((s,i,a)=>`<div class="pw-step ${i===0?'active':''}" onclick="${s[2]?"pwGo('"+s[1]+"')":"toast('"+s[0]+" — happens after you submit')"}"><div class="num">${String(i+1).padStart(2,'0')}</div><div class="nm">${s[0]}</div></div>${i<a.length-1?'<div class="pw-arrow">→</div>':''}`).join("")}</div>
     <div class="grid" style="grid-template-columns:1fr 300px;gap:24px;align-items:start">
       <div class="panel" id="contrib-form">
         <span class="wf-label">What are you adding?</span>
@@ -1133,15 +1134,16 @@ screens.contribute=(p)=>{
         <div class="grid g2"><div class="field-block"><span class="wf-label">Type of common *</span><select class="wf-in">${TYPES.map(t=>`<option>${t.name}</option>`).join("")}</select></div><div class="field-block"><span class="wf-label">Local term *</span><input class="wf-in" placeholder="e.g. Devrai, Oran, Eri…"></div></div>
         <div class="field-block"><span class="wf-label">${kind==='rule'?'Describe the local rule':'Describe the common'} *</span><textarea class="wf-in" placeholder="${kind==='rule'?'Which rule, who follows it, how it is enforced…':'Who uses it, how it is governed…'}"></textarea></div>
         <div class="grid g2" id="fld-state"><div class="field-block"><span class="wf-label">State *</span><select class="wf-in"><option>Select state…</option><option>Maharashtra</option><option>Rajasthan</option><option>Kerala</option><option>Tamil Nadu</option><option>Odisha</option><option>Gujarat</option></select></div><div class="field-block"><span class="wf-label">District *</span><select class="wf-in"><option>Select district…</option><option>Pune</option><option>Kolhapur</option><option>Sindhudurg</option></select></div></div>
-        <div class="field-block" id="fld-gps"><span class="wf-label">GPS location *</span><div class="wf-field" onclick="toast('Location detected (placeholder)')">◎ 18.52° N, 73.86° E — use my location</div></div>
+        <div class="field-block" id="fld-gps"><span class="wf-label">GPS location *</span>
+          <div class="wf-field" style="justify-content:space-between;cursor:pointer" onclick="useMyLocation()"><span id="gps-val">◎ Not set — tap to detect</span><span class="btn sm" style="pointer-events:none;box-shadow:none">Use my location</span></div>
+        </div>
         <div class="field-block"><span class="wf-label">Photos</span><div class="ph-img" style="min-height:70px" onclick="toast('Upload photos (placeholder)')">⇧ Drop photos — scanned · stored on secure NAS</div></div>
         <div class="between"><a class="btn" onclick="go('#/home')">Cancel</a><a class="btn primary" onclick="go('#/contribute?submitted=${kind}')">Submit for review →</a></div>
       </div>
       <div class="stack">
         <div class="panel"><div class="wf-note">What happens next</div>
-          <div class="stack mt12">${WORKFLOW.map((w,i)=>`<div class="ctx-row"><h5>${i+1} · ${w.t}</h5><p>${['Queued for a reviewer','Moderator verifies details & location','Admin approves for publishing','Appears on map & pages'][i]}</p></div>`).join("")}</div>
+          <div class="stack mt12">${WORKFLOW.map((w,i)=>`<div class="ctx-row"><h5>${i+1} · ${w.t}</h5><p>${['Queued for a reviewer','Admin verifies details & location','Admin approves for publishing','Appears on map & pages'][i]}</p></div>`).join("")}</div>
         </div>
-        <div class="ctx-row"><h5>Signed in via Commons SSO</h5><p>Contributing as a registered user of India Observatory.</p></div>
       </div>
     </div>
   </section>
@@ -1426,6 +1428,19 @@ function pwGo(t){
   el.classList.add('pw-flash'); setTimeout(()=>el.classList.remove('pw-flash'),1200);
 }
 window.addEventListener("hashchange",render);
+
+/* Contribute: GPS "use my location" — detect → set (wireframe placeholder) */
+function useMyLocation(){
+  const el=document.getElementById('gps-val');
+  if(!el) return;
+  el.textContent='◎ Detecting your location…';
+  el.style.color='var(--ink-3)';
+  setTimeout(function(){
+    el.textContent='✓ 18.5204° N, 73.8567° E · location set';
+    el.style.color='var(--ink)';
+    toast('GPS location detected');
+  },500);
+}
 
 /* ============ HELPERS ============ */
 function toggleProfileW(e){e.stopPropagation();const p=document.getElementById('profilew');if(p)p.classList.toggle('open');}
