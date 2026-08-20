@@ -548,6 +548,11 @@ const APPROVAL_QUEUE=[
   ["Local Name","Eri tank system","Tamil Nadu · Madurai","PL","Reviewed"],
   ["Local Name","Kavu sacred grove","Kerala · Thrissur","NM","Approved"]
 ];
+/* submissions the user adds via the Contribute form (persisted) — newest first, merged ahead of the demo rows */
+let USER_SUBS=[];
+try{const _s=localStorage.getItem('uc_subs');if(_s)USER_SUBS=JSON.parse(_s)||[];}catch(e){}
+function myContribs(){return USER_SUBS.concat(MY_CONTRIB);}
+function saveSubs(){try{localStorage.setItem('uc_subs',JSON.stringify(USER_SUBS));}catch(e){}}
 let currentRole=null; /* null = signed out (guest) */
 let loginRole=ROLES.length-1; /* role selected on the login form (default: Super Admin) */
 function toggleLoginRole(e){e.stopPropagation();const d=document.getElementById('loginRoleDD');if(d)d.classList.toggle('open');}
@@ -1125,15 +1130,15 @@ screens.contribute=(p)=>{
       <div class="panel" id="contrib-form">
         <span class="wf-label">What are you adding?</span>
         <div class="row" style="gap:10px;margin:6px 0 18px"><a class="btn block" style="flex:1;${kind==='name'?'border-color:var(--ink);border-width:1.5px':''}" onclick="go('#/contribute?kind=name')">${kind==='name'?'◉':'○'} Local Name</a><a class="btn block" style="flex:1;${kind==='rule'?'border-color:var(--ink);border-width:1.5px':''}" onclick="go('#/contribute?kind=rule')">${kind==='rule'?'◉':'○'} Local Rule</a></div>
-        <div class="field-block"><span class="wf-label">Name of the common *</span><input class="wf-in" placeholder="e.g. Devrai near the temple"></div>
-        <div class="grid g2"><div class="field-block"><span class="wf-label">Type of common *</span><select class="wf-in">${TYPES.map(t=>`<option>${t.name}</option>`).join("")}</select></div><div class="field-block"><span class="wf-label">Local term *</span><input class="wf-in" placeholder="e.g. Devrai, Oran, Eri…"></div></div>
-        <div class="field-block"><span class="wf-label">${kind==='rule'?'Describe the local rule':'Describe the common'} *</span><textarea class="wf-in" placeholder="${kind==='rule'?'Which rule, who follows it, how it is enforced…':'Who uses it, how it is governed…'}"></textarea></div>
-        <div class="grid g2" id="fld-state"><div class="field-block"><span class="wf-label">State *</span><select class="wf-in"><option>Select state…</option><option>Maharashtra</option><option>Rajasthan</option><option>Kerala</option><option>Tamil Nadu</option><option>Odisha</option><option>Gujarat</option></select></div><div class="field-block"><span class="wf-label">District *</span><select class="wf-in"><option>Select district…</option><option>Pune</option><option>Kolhapur</option><option>Sindhudurg</option></select></div></div>
+        <div class="field-block"><span class="wf-label">Name of the common *</span><input id="cf-name" class="wf-in" placeholder="e.g. Devrai near the temple"></div>
+        <div class="grid g2"><div class="field-block"><span class="wf-label">Type of common *</span><select id="cf-type" class="wf-in">${TYPES.map(t=>`<option>${t.name}</option>`).join("")}</select></div><div class="field-block"><span class="wf-label">Local term *</span><input id="cf-term" class="wf-in" placeholder="e.g. Devrai, Oran, Eri…"></div></div>
+        <div class="field-block"><span class="wf-label">${kind==='rule'?'Describe the local rule':'Describe the common'} *</span><textarea id="cf-desc" class="wf-in" placeholder="${kind==='rule'?'Which rule, who follows it, how it is enforced…':'Who uses it, how it is governed…'}"></textarea></div>
+        <div class="grid g2" id="fld-state"><div class="field-block"><span class="wf-label">State *</span><select id="cf-state" class="wf-in"><option>Select state…</option><option>Maharashtra</option><option>Rajasthan</option><option>Kerala</option><option>Tamil Nadu</option><option>Odisha</option><option>Gujarat</option></select></div><div class="field-block"><span class="wf-label">District *</span><select id="cf-district" class="wf-in"><option>Select district…</option><option>Pune</option><option>Kolhapur</option><option>Sindhudurg</option></select></div></div>
         <div class="field-block" id="fld-gps"><span class="wf-label">GPS location *</span>
           <div class="wf-field" style="justify-content:space-between;cursor:pointer" onclick="useMyLocation()"><span id="gps-val">◎ Not set — tap to detect</span><span class="btn sm" style="pointer-events:none;box-shadow:none">Use my location</span></div>
         </div>
         <div class="field-block"><span class="wf-label">Photos</span><div class="ph-img" style="min-height:70px" onclick="toast('Upload photos (placeholder)')">⇧ Drop photos — scanned · stored on secure NAS</div></div>
-        <div class="between"><a class="btn" onclick="go('#/home')">Cancel</a><a class="btn primary" onclick="go('#/contribute?submitted=${kind}')">Submit for review →</a></div>
+        <div class="between"><a class="btn" onclick="go('#/home')">Cancel</a><a class="btn primary" onclick="submitContribution('${kind}')">Submit for review →</a></div>
       </div>
       <div class="stack">
         <div class="panel"><div class="wf-note">What happens next</div>
@@ -1276,15 +1281,16 @@ function wfTimeline(stage,who){
 screens.contributions=(p)=>{
   if(!roleCan('contribute')) return gateScreen('My Contributions','Sign in as a Registered User or higher to contribute local names and rules and track your submissions.');
   const tab=(p&&p.tab)||'All';
-  const n=st=>MY_CONTRIB.filter(c=>c[3]===st).length;
-  const tabs=[['All',MY_CONTRIB.length],['Pending',n('Pending')],['Reviewed',n('Reviewed')],['Approved',n('Approved')],['Published',n('Published')]];
-  const rows=MY_CONTRIB.map((c,i)=>({c,i})).filter(o=>tab==='All'||o.c[3]===tab);
+  const mine=myContribs();
+  const n=st=>mine.filter(c=>c[3]===st).length;
+  const tabs=[['All',mine.length],['Pending',n('Pending')],['Reviewed',n('Reviewed')],['Approved',n('Approved')],['Published',n('Published')]];
+  const rows=mine.map((c,i)=>({c,i})).filter(o=>tab==='All'||o.c[3]===tab);
   return shell(null,[{label:"Home",href:"#/home"},{label:"My Profile",href:"#/profile"},{label:"My Contributions"}],`
   <section class="section">
     <div class="between"><div><div class="eyebrow">Profile · Contributions</div><h2 class="mb0">My Contributions</h2></div><a class="btn primary" onclick="go('#/contribute')">+ Contribute a Common</a></div>
     <p class="sub">The local names and rules you have submitted, and where each sits in the review workflow. Tap a submission to see its full approval flow.</p>
     <div class="grid g4 mt8">
-      <div class="stat"><b>${MY_CONTRIB.length}</b><span>Total submissions</span></div>
+      <div class="stat"><b>${mine.length}</b><span>Total submissions</span></div>
       <div class="stat"><b>${n('Pending')+n('Reviewed')}</b><span>In review</span></div>
       <div class="stat"><b>${n('Approved')}</b><span>Approved</span></div>
       <div class="stat"><b>${n('Published')}</b><span>Published</span></div>
@@ -1316,7 +1322,7 @@ screens.approvals=(p)=>{
 };
 screens.submission=(p)=>{
   const fromQueue=p.src==='queue';
-  const arr=fromQueue?APPROVAL_QUEUE:MY_CONTRIB;
+  const arr=fromQueue?APPROVAL_QUEUE:myContribs();
   const it=arr[+p.idx];
   if(!it) return gateScreen('Submission','This submission could not be found.');
   if(fromQueue && !roleCan('moderate')) return gateScreen('Submission','Sign in as a Moderator or Admin to review this submission.');
@@ -1424,6 +1430,18 @@ function pwGo(t){
 }
 window.addEventListener("hashchange",render);
 
+/* Contribute: capture the form, add it to My Contributions (Pending), then show the confirmation modal */
+function submitContribution(kind){
+  const g=id=>{const e=document.getElementById(id);return e&&e.value?e.value.trim():'';};
+  const type=kind==='rule'?'Local Rule':'Local Name';
+  const name=g('cf-name')||(kind==='rule'?'Untitled local rule':'Untitled common');
+  let state=g('cf-state'); if(!state||/^select/i.test(state)) state='—';
+  let district=g('cf-district'); if(/^select/i.test(district)) district='';
+  const loc=district?state+' · '+district:state;
+  USER_SUBS.unshift([type,name,loc,'Pending']);
+  saveSubs();
+  go('#/contribute?submitted='+kind);
+}
 /* Contribute: GPS "use my location" — detect → set (wireframe placeholder) */
 function useMyLocation(){
   const el=document.getElementById('gps-val');
