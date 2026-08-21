@@ -1259,27 +1259,36 @@ screens.profile=()=>{
   if(currentRole==null) return gateScreen('My Profile','Sign in to view and edit your profile.');
   const nm=ROLES[currentRole][0], ini=nm.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
   return accountShell('profile',[{label:"Home",href:"#/home"},{label:"My Profile"}],`
-    <h2 style="margin-top:0">My Profile</h2>
-    <div class="grid" style="grid-template-columns:1fr 1.5fr;gap:24px;align-items:start">
-      <div class="panel" style="text-align:center">
-        <div class="pw-av lg" style="width:76px;height:76px;font-size:26px;margin:0 auto 12px">${ini}</div>
-        <h3 style="margin:0;font-size:16px">${nm}</h3>
-        <p class="muted" style="margin:4px 0 12px">${ROLES[currentRole][1]}</p>
-        <div class="ph-img" style="min-height:0;padding:14px" onclick="toast('Change photo (placeholder)')">＋ Add profile photo</div>
+    <h2 style="margin-top:0;margin-bottom:16px">My Profile</h2>
+    <div class="grid" style="grid-template-columns:300px 1fr;gap:24px;align-items:start">
+      <div class="stack" style="gap:16px">
+        <div class="panel" style="text-align:center">
+          <div class="pw-av lg" style="width:84px;height:84px;font-size:28px;margin:4px auto 14px">${ini}</div>
+          <h3 style="margin:0;font-size:16px">${nm}</h3>
+          <p class="muted" style="margin:4px 0 14px;font-size:12.5px">${ROLES[currentRole][1]}</p>
+          <div class="ph-img" style="min-height:0;padding:12px" onclick="toast('Change photo (placeholder)')">＋ Add profile photo</div>
+          <div style="border-top:1px solid var(--line-2);margin-top:14px;padding-top:6px;text-align:left">
+            <div class="detail-f"><span class="k">Status</span><span class="v"><span class="tag solid">Active</span></span></div>
+            <div class="detail-f"><span class="k">Member since</span><span class="v">May 2026</span></div>
+            <div class="detail-f"><span class="k">Sign-in</span><span class="v">Commons SSO</span></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="wf-note" style="margin-bottom:10px">Your modules</div>
+          <div class="stack" style="gap:10px">
+            ${roleCan('contribute')?`<div class="ctx-row" onclick="go('#/contributions')" style="cursor:pointer"><h5>📄 My Contributions</h5><p>Local names &amp; rules you have submitted, with their status.</p></div>`:''}
+            ${roleCan('moderate')?`<div class="ctx-row" onclick="go('#/approvals')" style="cursor:pointer"><h5>✅ Approval module</h5><p>Review and approve submissions in the moderation queue.</p></div>`:''}
+            ${!roleCan('contribute')?`<div class="ctx-row"><h5>Browse &amp; download</h5><p>As a Visitor you can browse and search all content and download resources.</p></div>`:''}
+          </div>
+        </div>
       </div>
-      <div class="stack">
-        <div class="panel"><div class="wf-note" style="margin-bottom:10px">Profile details</div>
-          <div class="field-block"><span class="wf-label">Full name</span><div class="wf-field">Your name</div></div>
-          <div class="grid g2"><div class="field-block"><span class="wf-label">Email</span><div class="wf-field">✉ you@indiaobservatory.org</div></div><div class="field-block"><span class="wf-label">Phone</span><div class="wf-field">＋91 …</div></div></div>
-          <div class="grid g2"><div class="field-block"><span class="wf-label">Organisation</span><div class="wf-field">India Observatory</div></div><div class="field-block"><span class="wf-label">Role</span><div class="wf-field">${nm}</div></div></div>
-          <div class="row"><a class="btn primary" onclick="toast('Profile saved (placeholder)')">Save changes</a><a class="btn" onclick="go('#/password')">Change password</a></div>
-        </div>
-        <div class="wf-note">Your modules</div>
-        <div class="grid g2">
-          ${roleCan('contribute')?`<div class="ctx-row" onclick="go('#/contributions')" style="cursor:pointer"><h5>📄 My Contributions</h5><p>Local names &amp; rules you have submitted, with their status (Pending → Reviewed → Approved → Published).</p></div>`:''}
-          ${roleCan('moderate')?`<div class="ctx-row" onclick="go('#/approvals')" style="cursor:pointer"><h5>✅ Approval module</h5><p>Review and approve submissions in the moderation queue.</p></div>`:''}
-          ${!roleCan('contribute')?`<div class="ctx-row"><h5>Browse &amp; download</h5><p>As a Visitor you can browse and search all content and download resources.</p></div>`:''}
-        </div>
+      <div class="panel">
+        <div class="between" style="margin-bottom:14px"><div class="wf-note" style="margin:0">Profile details</div><span class="tag">${nm}</span></div>
+        <div class="field-block"><span class="wf-label">Full name</span><input class="wf-in" placeholder="Your name"></div>
+        <div class="grid g2"><div class="field-block"><span class="wf-label">Email</span><input class="wf-in" placeholder="you@indiaobservatory.org"></div><div class="field-block"><span class="wf-label">Phone</span><input class="wf-in" placeholder="+91 …"></div></div>
+        <div class="grid g2"><div class="field-block"><span class="wf-label">Organisation</span><input class="wf-in" value="India Observatory"></div><div class="field-block"><span class="wf-label">Role</span><input class="wf-in" value="${nm}" readonly></div></div>
+        <div class="field-block"><span class="wf-label">Bio</span><textarea class="wf-in" placeholder="A short line about your work with the commons…"></textarea></div>
+        <div class="row" style="margin-top:6px"><a class="btn primary" onclick="toast('Profile saved (placeholder)')">Save changes</a><a class="btn" onclick="go('#/password')">Change password</a></div>
       </div>
     </div>
   `);
