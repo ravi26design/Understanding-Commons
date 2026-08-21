@@ -871,7 +871,6 @@ screens.types=()=>{const ti=curTypeIdx||0,T=TYPES[ti];return shell("#/types",[{l
   <div class="hero">
     <div class="grid" style="grid-template-columns:1.3fr 1fr;gap:24px;align-items:center">
       <div>
-        <div class="eyebrow">Types of Commons · SRS §2.1.3</div>
         <h1 style="font-size:28px;margin:6px 0 12px">Types of Commons</h1>
         <p class="lead" style="margin:0">Natural, cultural and knowledge-based shared systems. Presented as one landscape illustration, an interactive map of local names, and the distribution of commons land and water.</p>
       </div>
@@ -964,7 +963,7 @@ screens.type=(p)=>{const t=typeById(p.id)||TYPES[0];
       </div>`;
   const mapSections = maps ? maps.map(m=>`
       <section class="section">
-        <div class="eyebrow">Local names across India · SRS §2.1.3.2</div>
+        <div class="eyebrow">Local names across India</div>
         <h2 style="font-size:18px">${m.label}</h2>
         <p class="sub">The names communities use across different states (ref: Our Commons · promiseofcommons.in/discover) — a static illustrated map.</p>
         <div class="ph-img" style="min-height:340px" onclick="toast('Marker → local-name popup card (placeholder)')">Static illustrated India map — ${m.label} (wireframe placeholder · pins mark states)</div>
@@ -979,7 +978,7 @@ screens.type=(p)=>{const t=typeById(p.id)||TYPES[0];
 
 screens.significance=()=>shell("#/significance",[{label:"Home",href:"#/home"},{label:"Significance"}],`
   <section class="section">
-    <div class="eyebrow">Significance of Commons · SRS §2.1.4</div><h2>Significance of Commons</h2>
+    <h2>Significance of Commons</h2>
     <p class="sub">Why commons matter — the environmental services they provide and the ecological, social, cultural and economic value they add to people's lives across geographies, alongside the threats they face. Explored through four thematic, state-wise maps.</p>
     <div class="hero">
       <div class="grid" style="grid-template-columns:270px 1fr;gap:28px;align-items:stretch">
@@ -1025,10 +1024,8 @@ screens.commoning=()=>{const CH=[
   <div class="hero">
     <div class="grid" style="grid-template-columns:1.3fr 1fr;gap:24px;align-items:center">
       <div>
-        <div class="eyebrow">Understanding Commons · Story Page · SRS §2.1.5</div>
         <h1 style="font-size:28px;margin:6px 0 12px">Commoning around us</h1>
         <p class="lead" style="margin:0 0 14px">Commoning is not just a concept from the past. It is a living practice that shows up in markets, farms, kitchens, neighbourhoods, songs, rituals, and moments of collective care. This page gathers those everyday expressions into a more immersive story.</p>
-        <div class="meta-tags"><span class="tag">Shared resources</span><span class="tag">Reciprocity in daily life</span><span class="tag">Memory, care, and stewardship</span></div>
       </div>
       <div class="lscape" style="min-height:250px;border:1px solid var(--line);border-radius:var(--radius);background:#fff">
         <img src="commoning-hero.png" alt="Commoning around us — hero image" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
@@ -1176,7 +1173,7 @@ screens.admin=()=>shell("#/admin",[{label:"Home",href:"#/home"},{label:"Moderati
     <div class="grid g2">
       <div class="panel"><div class="eyebrow">CMS</div><h2 style="font-size:18px;margin:0 0 10px">Content management</h2>
         ${["Introductory Page","What are Commons","Types of Commons","Significance","Commoning Around Us"].map((p,i)=>`<div class="between" style="border-top:1px solid var(--line-2);padding:10px 0"><span>${p}</span><div class="row" style="gap:8px;align-items:center"><span class="tag ${i<4?'solid':''}">${i<4?'Published':'Draft'}</span><a class="btn sm" onclick="toast('Edit: ${p} (placeholder)')">Edit</a></div></div>`).join("")}</div>
-      <div class="panel"><div class="eyebrow">Integrations & access · SRS §5</div><h2 style="font-size:18px;margin:0 0 10px">Platform services</h2>
+      <div class="panel"><div class="eyebrow">Integrations & access</div><h2 style="font-size:18px;margin:0 0 10px">Platform services</h2>
         ${[["Commons SSO","Connected"],["Admin Hierarchy service","Connected"],["Organizations service","Connected"],["Commons Microservice","Connected"],["Analytics Dashboard","Planned"]].map(x=>`<div class="between" style="border-top:1px solid var(--line-2);padding:10px 0"><span>${x[0]}</span><span class="tag ${x[1]==='Connected'?'solid':''}">${x[1]}</span></div>`).join("")}</div>
     </div>
   </section>
