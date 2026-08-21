@@ -558,8 +558,14 @@ const MY_CONTRIB=[
 const APPROVAL_QUEUE=[
   ["Local Name","Devrai near Bhimashankar","Maharashtra · Pune","RS","Pending"],
   ["Local Rule","Rotational grazing custom","Rajasthan · Barmer","AK","Pending"],
+  ["Local Name","Oran grove at Kolu","Rajasthan · Jaisalmer","SM","Pending"],
+  ["Local Rule","Fishing closed-season pact","Kerala · Kollam","RV","Pending"],
   ["Local Name","Eri tank system","Tamil Nadu · Madurai","PL","Reviewed"],
-  ["Local Name","Kavu sacred grove","Kerala · Thrissur","NM","Approved"]
+  ["Local Name","Van Panchayat forest","Uttarakhand · Almora","DN","Reviewed"],
+  ["Local Rule","Thengapali forest patrol","Odisha · Nayagarh","BP","Reviewed"],
+  ["Local Name","Kavu sacred grove","Kerala · Thrissur","NM","Approved"],
+  ["Local Name","Cascading tank chain","Tamil Nadu · Sivaganga","KV","Approved"],
+  ["Local Rule","Bugyal grazing rotation","Uttarakhand · Chamoli","GT","Approved"]
 ];
 /* submissions the user adds via the Contribute form (persisted) — newest first, merged ahead of the demo rows */
 let USER_SUBS=[];
@@ -1314,7 +1320,7 @@ screens.approvals=(p)=>{
   const rows=APPROVAL_QUEUE.map((c,i)=>({c,i})).filter(o=>tab==='All'||o.c[4]===tab);
   return shell(null,[{label:"Home",href:"#/home"},{label:"My Profile",href:"#/profile"},{label:"Approvals"}],`
   <section class="section">
-    <div class="between"><div><div class="eyebrow">Profile · Approval module</div><h2 class="mb0">Approvals</h2></div><a class="btn" onclick="go('#/admin')">Open full dashboard →</a></div>
+    <div class="between"><div><h2 class="mb0">Approvals</h2></div></div>
     <p class="sub">Submissions awaiting your review. Tap one to open its approval flow and act on it.</p>
     <div class="grid g4 mt8">
       <div class="stat"><b>${n('Pending')}</b><span>Pending</span></div>
