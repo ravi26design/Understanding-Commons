@@ -680,6 +680,7 @@ function header(active){
   return `<header class="site"><div class="container"><nav class="nav">
     <div class="logo" onclick="go('#/home')">UNDERSTANDING<small>COMMONS · PLATFORM</small></div>
     <ul>${visible.map(n=>`<li><a class="navlink ${active===n.id?'active':''}" onclick="go('${n.id}')">${n.label}</a></li>`).join("")}</ul>
+    <a class="btn sm btn-icon" onclick="toast('App launcher — Commons · VI Mapping · Form Builder · … (placeholder)')" title="Apps" aria-label="Apps"><svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3" cy="3" r="1.5"/><circle cx="8" cy="3" r="1.5"/><circle cx="13" cy="3" r="1.5"/><circle cx="3" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/><circle cx="3" cy="13" r="1.5"/><circle cx="8" cy="13" r="1.5"/><circle cx="13" cy="13" r="1.5"/></svg></a>
     <a class="btn sm btn-icon" onclick="openSearch()" title="Search" aria-label="Search">🔍</a>
     ${authArea}
   </nav></div></header>`;
