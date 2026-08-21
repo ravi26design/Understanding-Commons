@@ -911,8 +911,6 @@ screens.types=()=>shell("#/types",[{label:"Home",href:"#/home"},{label:"Types of
           <div class="sig-filters" id="type-filters">
             ${TYPES.map((t,i)=>`<button class="sig-fbtn ${i===0?'active':''}" onclick="typeFilter(${i},this)"><i></i>${t.num.replace(/^0/,'')}. ${t.name}</button>`).join("")}
           </div>
-          <div class="wf-note mt12">◉ Select a type, or click a label on the illustration above, to filter the map.</div>
-          <a class="btn sm block mt12" id="type-open-page" onclick="openTypePage()">Open full page →</a>
         </div>
         <div class="sig-map" style="margin:0">
           <div class="sig-map-top"><span id="type-map-title">${TYPES[0].name} — local names & distribution</span><a onclick="toast('Open map at full size (placeholder)')">Full size →</a></div>
