@@ -1273,14 +1273,6 @@ screens.profile=()=>{
             <div class="detail-f"><span class="k">Sign-in</span><span class="v">Commons SSO</span></div>
           </div>
         </div>
-        <div class="panel">
-          <div class="wf-note" style="margin-bottom:10px">Your modules</div>
-          <div class="stack" style="gap:10px">
-            ${roleCan('contribute')?`<div class="ctx-row" onclick="go('#/contributions')" style="cursor:pointer"><h5>📄 My Contributions</h5><p>Local names &amp; rules you have submitted, with their status.</p></div>`:''}
-            ${roleCan('moderate')?`<div class="ctx-row" onclick="go('#/approvals')" style="cursor:pointer"><h5>✅ Approval module</h5><p>Review and approve submissions in the moderation queue.</p></div>`:''}
-            ${!roleCan('contribute')?`<div class="ctx-row"><h5>Browse &amp; download</h5><p>As a Visitor you can browse and search all content and download resources.</p></div>`:''}
-          </div>
-        </div>
       </div>
       <div class="panel">
         <div class="between" style="margin-bottom:14px"><div class="wf-note" style="margin:0">Profile details</div><span class="tag">${nm}</span></div>
