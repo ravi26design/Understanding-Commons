@@ -1555,12 +1555,19 @@ let toastTimer;
 function toast(msg){let t=document.getElementById("wf-toast");
   if(!t){t=document.createElement("div");t.id="wf-toast";t.style.cssText="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2b2b2b;color:#fff;padding:10px 16px;border-radius:6px;font-size:13px;z-index:80;max-width:80vw;transition:opacity .2s";document.body.appendChild(t);}
   t.textContent=msg;t.style.opacity="1";clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.style.opacity="0";},1800);}
-document.getElementById("search-overlay").addEventListener("click",e=>{if(e.target.id==="search-overlay")closeSearch();});
+(function(){var _so=document.getElementById("search-overlay"); if(_so) _so.addEventListener("click",function(e){if(e.target.id==="search-overlay")closeSearch();});})();
 
 /* boot */
 try{var _r=localStorage.getItem('uc_role'); if(_r!==null && _r!=='') currentRole=+_r;}catch(e){}
 if(!location.hash) location.hash="#/home";
-render();
+function boot(){
+  try{ render(); }
+  catch(err){
+    var a=document.getElementById("app");
+    if(a) a.innerHTML='<div style="max-width:600px;margin:60px auto;padding:0 24px;font-family:system-ui,-apple-system,sans-serif;color:#171717"><h2>Couldn’t load the wireframe</h2><p style="color:#555">Please hard-refresh the page (Cmd+Shift+R / Ctrl+Shift+R).</p><pre style="white-space:pre-wrap;color:#999;font-size:12px">'+(err&&err.message?err.message:err)+'</pre></div>';
+  }
+}
+if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",boot);}else{boot();}
 </script>
 </body>
 </html>
