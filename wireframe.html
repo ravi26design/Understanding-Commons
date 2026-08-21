@@ -914,7 +914,7 @@ screens.types=()=>{const ti=curTypeIdx||0,T=TYPES[ti];return shell("#/types",[{l
         </div>
         <div class="sig-map" style="margin:0">
           <div class="sig-map-top"><span id="type-map-title">${T.name} — local names & distribution</span></div>
-          <div class="sig-map-canvas lscape" style="min-height:340px;background:#fff">
+          <div class="sig-map-canvas lscape" style="min-height:520px;background:#fff">
             <span class="sig-hero-badge" id="type-map-badge">Showing: ${T.name}</span>
             <img id="type-map-img" src="${T.id}-commons-map.png" alt="India map — commons distribution" onerror="this.style.display='none';document.getElementById('type-map-ph').style.display='flex';">
             <div id="type-map-ph" class="ph-img" style="display:none;position:absolute;inset:0;border:none;border-radius:0;flex-direction:column;gap:8px">
