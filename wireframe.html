@@ -116,6 +116,14 @@ main{min-height:60vh;padding-bottom:40px}
 .profilew.open .pw-cv{transform:rotate(180deg)}
 .profilew-menu{position:absolute;right:0;top:calc(100% + 8px);width:232px;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 16px 40px -12px rgba(30,30,30,.4);padding:6px;display:none;z-index:60}
 .profilew.open .profilew-menu{display:block}
+/* account pages: left-side nav */
+.acct-nav{display:flex;flex-direction:column;gap:4px;position:sticky;top:88px}
+.acct-nav .acct-h{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:0 12px 8px}
+.acct-item{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:var(--radius-sm);font-size:13.5px;color:var(--ink-2);cursor:pointer;border:1px solid transparent}
+.acct-item:hover{background:var(--fill)}
+.acct-item.active{background:var(--active);color:#fff;font-weight:600}
+.acct-item .acct-ic{font-size:15px;flex:none}
+@media(max-width:760px){.acct-nav{position:static;flex-direction:row;flex-wrap:wrap}.acct-grid{grid-template-columns:1fr!important}}
 .pw-head{display:flex;align-items:center;gap:10px;padding:8px}
 .pw-head b{display:block;font-size:14px}.pw-head span{font-size:11px;color:var(--ink-3)}
 .pw-div{height:1px;background:var(--line-2);margin:5px 0}
@@ -1234,12 +1242,24 @@ screens.help=()=>shell("#/help",[{label:"Home",href:"#/home"},{label:"Help"}],`
   </section>
 `);
 
+/* account pages share a left-side nav so users can move between them */
+function accountNav(active){
+  const items=[
+    ['profile','👤','My Profile','#/profile',true],
+    ['contributions','📄','My Contributions','#/contributions',roleCan('contribute')],
+    ['approvals','✅','Approvals','#/approvals',roleCan('moderate')],
+    ['password','🔑','Change Password','#/password',true]
+  ];
+  return `<div class="acct-nav"><div class="acct-h">Account</div>${items.filter(i=>i[4]).map(i=>`<a class="acct-item ${i[0]===active?'active':''}" onclick="go('${i[3]}')"><span class="acct-ic">${i[1]}</span>${i[2]}</a>`).join("")}</div>`;
+}
+function accountShell(active,crumbs,inner){
+  return shell(null,crumbs,`<section class="section"><div class="grid acct-grid" style="grid-template-columns:230px 1fr;gap:28px;align-items:start">${accountNav(active)}<div>${inner}</div></div></section>`);
+}
 screens.profile=()=>{
   if(currentRole==null) return gateScreen('My Profile','Sign in to view and edit your profile.');
   const nm=ROLES[currentRole][0], ini=nm.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-  return shell(null,[{label:"Home",href:"#/home"},{label:"My Profile"}],`
-  <section class="section">
-    <div class="eyebrow">Account</div><h2>My Profile</h2>
+  return accountShell('profile',[{label:"Home",href:"#/home"},{label:"My Profile"}],`
+    <h2 style="margin-top:0">My Profile</h2>
     <div class="grid" style="grid-template-columns:1fr 1.5fr;gap:24px;align-items:start">
       <div class="panel" style="text-align:center">
         <div class="pw-av lg" style="width:76px;height:76px;font-size:26px;margin:0 auto 12px">${ini}</div>
@@ -1262,13 +1282,12 @@ screens.profile=()=>{
         </div>
       </div>
     </div>
-  </section>`);
+  `);
 };
 screens.password=()=>{
   if(currentRole==null) return gateScreen('Change Password','Sign in to change your password.');
-  return shell(null,[{label:"Home",href:"#/home"},{label:"My Profile",href:"#/profile"},{label:"Change Password"}],`
-  <section class="section">
-    <div class="eyebrow">Account · Security</div><h2>Change Password</h2>
+  return accountShell('password',[{label:"Home",href:"#/home"},{label:"My Profile",href:"#/profile"},{label:"Change Password"}],`
+    <h2 style="margin-top:0">Change Password</h2>
     <div class="panel" style="max-width:520px">
       <div class="field-block"><span class="wf-label">Current password</span><div class="wf-field">•••••••• &nbsp;·&nbsp; 👁</div></div>
       <div class="field-block"><span class="wf-label">New password</span><div class="wf-field">•••••••• &nbsp;·&nbsp; 👁</div></div>
@@ -1276,7 +1295,7 @@ screens.password=()=>{
       <div class="wf-note" style="margin-bottom:14px">Use 8+ characters with a mix of letters, numbers and symbols.</div>
       <div class="row"><a class="btn primary" onclick="toast('Password updated (placeholder)')">Update password</a><a class="btn" onclick="go('#/profile')">Cancel</a></div>
     </div>
-  </section>`);
+  `);
 };
 function statusPill(s){const solid=(s==='Approved'||s==='Published');return `<span class="tag ${solid?'solid':''}">${s}</span>`;}
 function wfTimeline(stage,who){
@@ -1290,9 +1309,8 @@ screens.contributions=(p)=>{
   const n=st=>mine.filter(c=>c[3]===st).length;
   const tabs=[['All',mine.length],['Pending',n('Pending')],['Reviewed',n('Reviewed')],['Approved',n('Approved')],['Published',n('Published')]];
   const rows=mine.map((c,i)=>({c,i})).filter(o=>tab==='All'||o.c[3]===tab);
-  return shell(null,[{label:"Home",href:"#/home"},{label:"My Profile",href:"#/profile"},{label:"My Contributions"}],`
-  <section class="section">
-    <div class="between"><div><div class="eyebrow">Profile · Contributions</div><h2 class="mb0">My Contributions</h2></div><a class="btn primary" onclick="go('#/contribute')">+ Contribute a Common</a></div>
+  return accountShell('contributions',[{label:"Home",href:"#/home"},{label:"My Profile",href:"#/profile"},{label:"My Contributions"}],`
+    <div class="between"><div><h2 class="mb0" style="margin-top:0">My Contributions</h2></div><a class="btn primary" onclick="go('#/contribute')">+ Contribute a Common</a></div>
     <p class="sub">The local names and rules you have submitted, and where each sits in the review workflow. Tap a submission to see its full approval flow.</p>
     <div class="grid g4 mt8">
       <div class="stat"><b>${mine.length}</b><span>Total submissions</span></div>
@@ -1302,7 +1320,7 @@ screens.contributions=(p)=>{
     </div>
     <div class="tabs-c">${tabs.map(t=>`<span class="tab-c ${tab===t[0]?'active':''}" onclick="go('#/contributions${t[0]==='All'?'':'?tab='+t[0]}')">${t[0]} <span class="cnt">${t[1]}</span></span>`).join("")}</div>
     <div class="panel">${rows.length?rows.map((o,j)=>`<div class="sub-row" style="${j?'border-top:1px solid var(--line-2);':''}display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 6px" onclick="go('#/submission/mine/${o.i}')"><div><b style="font-size:14px">${o.c[1]}</b><div class="wf-note" style="text-transform:none;letter-spacing:0">${o.c[0]} · ${o.c[2]}</div></div><div class="row" style="gap:12px;align-items:center">${statusPill(o.c[3])}<span class="btn sm">View →</span></div></div>`).join(""):'<div class="wf-note" style="padding:18px;text-transform:none;letter-spacing:0">No submissions in this status.</div>'}</div>
-  </section>`);
+  `);
 };
 screens.approvals=(p)=>{
   if(!roleCan('moderate')) return gateScreen('Approvals','Sign in as a Moderator or Admin to review and approve submissions.');
@@ -1311,9 +1329,8 @@ screens.approvals=(p)=>{
   const n=st=>APPROVAL_QUEUE.filter(c=>c[4]===st).length;
   const tabs=[['All',APPROVAL_QUEUE.length],['Pending',n('Pending')],['Reviewed',n('Reviewed')],['Approved',n('Approved')]];
   const rows=APPROVAL_QUEUE.map((c,i)=>({c,i})).filter(o=>tab==='All'||o.c[4]===tab);
-  return shell(null,[{label:"Home",href:"#/home"},{label:"My Profile",href:"#/profile"},{label:"Approvals"}],`
-  <section class="section">
-    <div class="between"><div><h2 class="mb0">Approvals</h2></div></div>
+  return accountShell('approvals',[{label:"Home",href:"#/home"},{label:"My Profile",href:"#/profile"},{label:"Approvals"}],`
+    <div class="between"><div><h2 class="mb0" style="margin-top:0">Approvals</h2></div></div>
     <p class="sub">Submissions awaiting your review. Tap one to open its approval flow and act on it.</p>
     <div class="grid g4 mt8">
       <div class="stat"><b>${n('Pending')}</b><span>Pending</span></div>
@@ -1323,7 +1340,7 @@ screens.approvals=(p)=>{
     </div>
     <div class="tabs-c">${tabs.map(t=>`<span class="tab-c ${tab===t[0]?'active':''}" onclick="go('#/approvals${t[0]==='All'?'':'?tab='+t[0]}')">${t[0]} <span class="cnt">${t[1]}</span></span>`).join("")}</div>
     <div class="panel">${rows.length?rows.map((o,j)=>`<div class="sub-row" style="${j?'border-top:1px solid var(--line-2);':''}display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 6px" onclick="go('#/submission/queue/${o.i}')"><div class="row" style="gap:10px;align-items:center"><span class="pw-av" style="width:28px;height:28px;font-size:11px">${o.c[3]}</span><div><b style="font-size:14px">${o.c[1]}</b><div class="wf-note" style="text-transform:none;letter-spacing:0">${o.c[0]} · ${o.c[2]}</div></div></div><div class="row" style="gap:10px;align-items:center">${statusPill(o.c[4])}<span class="btn sm">${act(o.c[4])} →</span></div></div>`).join(""):'<div class="wf-note" style="padding:18px;text-transform:none;letter-spacing:0">Nothing in this status.</div>'}</div>
-  </section>`);
+  `);
 };
 screens.submission=(p)=>{
   const fromQueue=p.src==='queue';
