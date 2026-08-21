@@ -893,11 +893,40 @@ screens.types=()=>shell("#/types",[{label:"Home",href:"#/home"},{label:"Types of
       <div class="lscape" style="min-height:560px">
         <img src="types-landscape.png" alt="Types of Commons — landscape illustration" onerror="this.style.display='none';document.getElementById('lscape-ph').style.display='flex';">
         <div id="lscape-ph" class="ph-img" style="display:none;position:absolute;inset:0;border:none;border-radius:0">Landscape illustration — drop the file here as <b>&nbsp;types-landscape.png</b></div>
-        <span class="lpin" style="top:7%;left:4%" onclick="go('#/type/forest')"><span class="pico">🌳</span>1. Forest Commons<span class="lpin-card down"><span class="lc-ill"><img src="type-forest.png" alt="Forest Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">🌳</span></span><b class="lc-title">1. Forest Commons</b><span class="lc-desc">The collective use and management of forest resources by local communities, based on the principle of shared governance — shared rights and responsibilities to access, use and manage forest resources.</span></span></span>
-        <span class="lpin" style="top:13%;right:4%" onclick="go('#/type/coastal')"><span class="pico">🌊</span>4. Coastal Commons<span class="lpin-card right"><span class="lc-ill"><img src="type-coastal.png" alt="Coastal Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">🌊</span></span><b class="lc-title">4. Coastal Commons</b><span class="lc-desc">Diverse interacting resource systems — mangroves, beaches, estuaries and reefs — that support a variety of life forms and local livelihoods.</span></span></span>
-        <span class="lpin" style="top:52%;left:50%;transform:translateX(-50%)" onclick="go('#/type/water')"><span class="pico">💧</span>3. Water Commons<span class="lpin-card up center"><span class="lc-ill"><img src="type-water.png" alt="Water Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">💧</span></span><b class="lc-title">3. Water Commons</b><span class="lc-desc">All the surface, sub-surface and groundwater resources that are available for all people and ecosystems, at present and in future.</span></span></span>
-        <span class="lpin" style="bottom:20%;left:5%" onclick="go('#/type/pasture')"><span class="pico">🐄</span>2. Pasture Commons<span class="lpin-card up"><span class="lc-ill"><img src="type-pasture.png" alt="Pasture Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">🐄</span></span><b class="lc-title">2. Pasture Commons</b><span class="lc-desc">Village grazing lands designated for communal use by local communities for grazing livestock — a traditional system of shared resource management practised for centuries.</span></span></span>
-        <span class="lpin" style="bottom:6%;left:46%;transform:translateX(-50%);white-space:normal;max-width:230px" onclick="go('#/type/cultural')"><span class="pico">🌿</span><span>5. Cultural Commons<small>(Oral Epics and Sacred Groves)</small></span><span class="lpin-card up center"><span class="lc-ill"><img src="type-cultural.png" alt="Cultural Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">🌿</span></span><b class="lc-title">5. Cultural Commons</b><span class="lc-desc">Cultures located in time and space, shared and expressed by socially cohesive communities — from traditional knowledge to artistic movements; a system of intellectual resources available in a given area.</span></span></span>
+        <span class="lpin" style="top:7%;left:4%" onclick="typeFilter(0,null,true)"><span class="pico">🌳</span>1. Forest Commons<span class="lpin-card down"><span class="lc-ill"><img src="type-forest.png" alt="Forest Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">🌳</span></span><b class="lc-title">1. Forest Commons</b><span class="lc-desc">The collective use and management of forest resources by local communities, based on the principle of shared governance — shared rights and responsibilities to access, use and manage forest resources.</span></span></span>
+        <span class="lpin" style="top:13%;right:4%" onclick="typeFilter(3,null,true)"><span class="pico">🌊</span>4. Coastal Commons<span class="lpin-card right"><span class="lc-ill"><img src="type-coastal.png" alt="Coastal Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">🌊</span></span><b class="lc-title">4. Coastal Commons</b><span class="lc-desc">Diverse interacting resource systems — mangroves, beaches, estuaries and reefs — that support a variety of life forms and local livelihoods.</span></span></span>
+        <span class="lpin" style="top:52%;left:50%;transform:translateX(-50%)" onclick="typeFilter(2,null,true)"><span class="pico">💧</span>3. Water Commons<span class="lpin-card up center"><span class="lc-ill"><img src="type-water.png" alt="Water Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">💧</span></span><b class="lc-title">3. Water Commons</b><span class="lc-desc">All the surface, sub-surface and groundwater resources that are available for all people and ecosystems, at present and in future.</span></span></span>
+        <span class="lpin" style="bottom:20%;left:5%" onclick="typeFilter(1,null,true)"><span class="pico">🐄</span>2. Pasture Commons<span class="lpin-card up"><span class="lc-ill"><img src="type-pasture.png" alt="Pasture Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">🐄</span></span><b class="lc-title">2. Pasture Commons</b><span class="lc-desc">Village grazing lands designated for communal use by local communities for grazing livestock — a traditional system of shared resource management practised for centuries.</span></span></span>
+        <span class="lpin" style="bottom:6%;left:46%;transform:translateX(-50%);white-space:normal;max-width:230px" onclick="typeFilter(4,null,true)"><span class="pico">🌿</span><span>5. Cultural Commons<small>(Oral Epics and Sacred Groves)</small></span><span class="lpin-card up center"><span class="lc-ill"><img src="type-cultural.png" alt="Cultural Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">🌿</span></span><b class="lc-title">5. Cultural Commons</b><span class="lc-desc">Cultures located in time and space, shared and expressed by socially cohesive communities — from traditional knowledge to artistic movements; a system of intellectual resources available in a given area.</span></span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="types-detail">
+    <div class="eyebrow">Explore by type</div><h2 style="font-size:18px">Where each type of common is found</h2>
+    <div class="hero" style="margin-top:8px">
+      <div class="grid" style="grid-template-columns:270px 1fr;gap:28px;align-items:stretch">
+        <div>
+          <div class="wf-note" style="margin-bottom:10px">Filter the map by type</div>
+          <div class="sig-filters" id="type-filters">
+            ${TYPES.map((t,i)=>`<button class="sig-fbtn ${i===0?'active':''}" onclick="typeFilter(${i},this)"><i></i>${t.num.replace(/^0/,'')}. ${t.name}</button>`).join("")}
+          </div>
+          <div class="wf-note mt12">◉ Select a type, or click a label on the illustration above, to filter the map.</div>
+          <a class="btn sm block mt12" id="type-open-page" onclick="openTypePage()">Open full page →</a>
+        </div>
+        <div class="sig-map" style="margin:0">
+          <div class="sig-map-top"><span id="type-map-title">${TYPES[0].name} — local names & distribution</span><a onclick="toast('Open map at full size (placeholder)')">Full size →</a></div>
+          <div class="sig-map-canvas lscape" style="min-height:340px;background:#fff">
+            <span class="sig-hero-badge" id="type-map-badge">Showing: ${TYPES[0].name}</span>
+            <img id="type-map-img" src="${TYPES[0].id}-commons-map.png" alt="India map — commons distribution" onerror="this.style.display='none';document.getElementById('type-map-ph').style.display='flex';">
+            <div id="type-map-ph" class="ph-img" style="display:none;position:absolute;inset:0;border:none;border-radius:0;flex-direction:column;gap:8px">
+              <div class="icon-box" style="width:42px;height:42px;font-size:22px">＋</div>
+              <div style="font-weight:600;color:var(--ink-2)">Add <span id="type-map-phname">${TYPES[0].name}</span> map</div>
+              <div class="wf-note" id="type-map-phfile">drop file as ${TYPES[0].id}-commons-map.png</div>
+            </div>
+          </div>
+          <div class="sig-legend"><span class="wf-note" id="type-map-legend">${TYPES[0].name} density</span><span class="sig-scale"><i></i><i></i><i></i><i></i><i></i></span><span class="wf-note">Low → High</span></div>
+        </div>
       </div>
     </div>
   </section>
@@ -1486,6 +1515,21 @@ function sigMapFilter(i,el){const s=SIG[i];
   const lg=document.getElementById('sig-hero-legend');if(lg)lg.textContent=s.key+' intensity';
   const p=document.getElementById('sig-panel');if(p)p.innerHTML=sigPanelHTML(i);}
 function sigTab(i){sigMapFilter(i);}
+/* Types of Commons: in-page map filter driven by the landscape pins / type buttons */
+let curTypeIdx=0;
+function typeFilter(i,el,scroll){const t=TYPES[i];curTypeIdx=i;
+  document.querySelectorAll('#type-filters .sig-fbtn').forEach(b=>b.classList.remove('active'));
+  const btns=document.querySelectorAll('#type-filters .sig-fbtn');
+  if(el){el.classList.add('active');} else if(btns[i]){btns[i].classList.add('active');}
+  const title=document.getElementById('type-map-title');if(title)title.textContent=t.name+' — local names & distribution';
+  const badge=document.getElementById('type-map-badge');if(badge)badge.textContent='Showing: '+t.name;
+  const leg=document.getElementById('type-map-legend');if(leg)leg.textContent=t.name+' density';
+  const phn=document.getElementById('type-map-phname');if(phn)phn.textContent=t.name;
+  const phf=document.getElementById('type-map-phfile');if(phf)phf.textContent='drop file as '+t.id+'-commons-map.png';
+  const img=document.getElementById('type-map-img'),ph=document.getElementById('type-map-ph');
+  if(img){img.style.display='';if(ph)ph.style.display='none';img.src=t.id+'-commons-map.png';}
+  if(scroll)pwGo('types-detail');}
+function openTypePage(){go('#/type/'+TYPES[curTypeIdx].id);}
 function sigState(i,si,el){const c=document.getElementById('sig-state-card');if(c)c.innerHTML=`<h5>${SIG_STATES[si]} · ${SIG[i].key}</h5><p>State-wise ${SIG[i].key.toLowerCase()} content for ${SIG_STATES[si]}, drawn from the Commons Matrix (placeholder).</p>`;if(el){el.parentNode.querySelectorAll('.sigst').forEach(x=>x.classList.remove('active'));el.classList.add('active');}}
 let toastTimer;
 function toast(msg){let t=document.getElementById("wf-toast");
