@@ -1558,7 +1558,7 @@ function toast(msg){let t=document.getElementById("wf-toast");
 (function(){var _so=document.getElementById("search-overlay"); if(_so) _so.addEventListener("click",function(e){if(e.target.id==="search-overlay")closeSearch();});})();
 
 /* boot */
-try{var _r=localStorage.getItem('uc_role'); if(_r!==null && _r!=='') currentRole=+_r;}catch(e){}
+try{var _r=localStorage.getItem('uc_role'); if(_r!==null && _r!=='' && ROLES[+_r]){ currentRole=+_r; } else if(_r!==null){ localStorage.removeItem('uc_role'); } }catch(e){}
 if(!location.hash) location.hash="#/home";
 function boot(){
   try{ render(); }
