@@ -693,9 +693,9 @@ function shell(active,crumbItems,body){
 }
 
 /* reusable: commons-types pathway */
-function typesPathway(activeId){
+function typesPathway(activeId,target){
   return `<div class="pathway">${TYPES.map((t,i)=>`
-    <div class="pw-step ${t.id===activeId?'active':''}" onclick="go('#/type/${t.id}')"><div class="num">${t.num}</div><div class="nm">${t.name.replace(' Commons','')}</div></div>
+    <div class="pw-step ${t.id===activeId?'active':''}" onclick="${target==='filter'?`goTypeFilter(${i})`:`go('#/type/${t.id}')`}"><div class="num">${t.num}</div><div class="nm">${t.name.replace(' Commons','')}</div></div>
     ${i<TYPES.length-1?'<div class="pw-arrow">→</div>':''}`).join("")}</div>`;
 }
 /* reusable: moderation workflow flow */
@@ -808,8 +808,8 @@ screens.home=()=>shell("#/home",null,`
 
   <section class="section">
     <div class="between"><div><div class="eyebrow">The five families</div><h2 class="mb0">Types of Commons</h2></div><a class="btn sm" onclick="go('#/types')">Explore Types →</a></div>
-    <p class="sub">Click a type to open its page. Each has its own local names across states.</p>
-    ${typesPathway(null)}
+    <p class="sub">Click a type to open its map on the Types of Commons page. Each has its own local names across states.</p>
+    ${typesPathway(null,'filter')}
   </section>
 
   <section class="section">
@@ -865,7 +865,7 @@ screens.what=()=>{
   </section>
 `);};
 
-screens.types=()=>shell("#/types",[{label:"Home",href:"#/home"},{label:"Types of Commons"}],`
+screens.types=()=>{const ti=curTypeIdx||0,T=TYPES[ti];return shell("#/types",[{label:"Home",href:"#/home"},{label:"Types of Commons"}],`
   <div class="hero">
     <div class="grid" style="grid-template-columns:1.3fr 1fr;gap:24px;align-items:center">
       <div>
@@ -909,27 +909,27 @@ screens.types=()=>shell("#/types",[{label:"Home",href:"#/home"},{label:"Types of
         <div>
           <div class="wf-note" style="margin-bottom:10px">Filter the map by type</div>
           <div class="sig-filters" id="type-filters">
-            ${TYPES.map((t,i)=>`<button class="sig-fbtn ${i===0?'active':''}" onclick="typeFilter(${i},this)"><i></i>${t.num.replace(/^0/,'')}. ${t.name}</button>`).join("")}
+            ${TYPES.map((t,i)=>`<button class="sig-fbtn ${i===ti?'active':''}" onclick="typeFilter(${i},this)"><i></i>${t.num.replace(/^0/,'')}. ${t.name}</button>`).join("")}
           </div>
         </div>
         <div class="sig-map" style="margin:0">
-          <div class="sig-map-top"><span id="type-map-title">${TYPES[0].name} — local names & distribution</span></div>
+          <div class="sig-map-top"><span id="type-map-title">${T.name} — local names & distribution</span></div>
           <div class="sig-map-canvas lscape" style="min-height:340px;background:#fff">
-            <span class="sig-hero-badge" id="type-map-badge">Showing: ${TYPES[0].name}</span>
-            <img id="type-map-img" src="${TYPES[0].id}-commons-map.png" alt="India map — commons distribution" onerror="this.style.display='none';document.getElementById('type-map-ph').style.display='flex';">
+            <span class="sig-hero-badge" id="type-map-badge">Showing: ${T.name}</span>
+            <img id="type-map-img" src="${T.id}-commons-map.png" alt="India map — commons distribution" onerror="this.style.display='none';document.getElementById('type-map-ph').style.display='flex';">
             <div id="type-map-ph" class="ph-img" style="display:none;position:absolute;inset:0;border:none;border-radius:0;flex-direction:column;gap:8px">
               <div class="icon-box" style="width:42px;height:42px;font-size:22px">＋</div>
-              <div style="font-weight:600;color:var(--ink-2)">Add <span id="type-map-phname">${TYPES[0].name}</span> map</div>
-              <div class="wf-note" id="type-map-phfile">drop file as ${TYPES[0].id}-commons-map.png</div>
+              <div style="font-weight:600;color:var(--ink-2)">Add <span id="type-map-phname">${T.name}</span> map</div>
+              <div class="wf-note" id="type-map-phfile">drop file as ${T.id}-commons-map.png</div>
             </div>
           </div>
-          <div class="sig-legend"><span class="wf-note" id="type-map-legend">${TYPES[0].name} density</span><span class="sig-scale"><i></i><i></i><i></i><i></i><i></i></span><span class="wf-note">Low → High</span></div>
+          <div class="sig-legend"><span class="wf-note" id="type-map-legend">${T.name} density</span><span class="sig-scale"><i></i><i></i><i></i><i></i><i></i></span><span class="wf-note">Low → High</span></div>
         </div>
       </div>
     </div>
   </section>
 
-`);
+`);};
 
 screens.type=(p)=>{const t=typeById(p.id)||TYPES[0];
   const maps = t.maps ? t.maps : (t.mapNames ? [{label:t.name+" — local names by state", names:t.mapNames}] : null);
@@ -1528,6 +1528,10 @@ function typeFilter(i,el,scroll){const t=TYPES[i];curTypeIdx=i;
   if(img){img.style.display='';if(ph)ph.style.display='none';img.src=t.id+'-commons-map.png';}
   if(scroll)pwGo('types-detail');}
 function openTypePage(){go('#/type/'+TYPES[curTypeIdx].id);}
+/* deep-link from the home 'five families' strip → Types page filter section, with that type selected */
+function goTypeFilter(i){curTypeIdx=i;
+  if(location.hash==='#/types'){typeFilter(i,null,true);}
+  else{location.hash='#/types';setTimeout(function(){typeFilter(i,null,true);},90);}}
 function sigState(i,si,el){const c=document.getElementById('sig-state-card');if(c)c.innerHTML=`<h5>${SIG_STATES[si]} · ${SIG[i].key}</h5><p>State-wise ${SIG[i].key.toLowerCase()} content for ${SIG_STATES[si]}, drawn from the Commons Matrix (placeholder).</p>`;if(el){el.parentNode.querySelectorAll('.sigst').forEach(x=>x.classList.remove('active'));el.classList.add('active');}}
 let toastTimer;
 function toast(msg){let t=document.getElementById("wf-toast");
