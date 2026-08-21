@@ -902,17 +902,6 @@ screens.types=()=>shell("#/types",[{label:"Home",href:"#/home"},{label:"Types of
     </div>
   </section>
 
-  <section class="section">
-    <div class="eyebrow">The five types · content from Our Commons (p.14)</div><h2 style="font-size:18px">Forest · Pasture · Water · Coastal · Cultural</h2>
-    <div class="grid g2">${TYPES.map(t=>`<div class="card click" onclick="go('#/type/${t.id}')">
-      <div class="row" style="gap:12px;align-items:flex-start"><div class="ph-img" style="width:64px;min-height:64px;flex:0 0 64px" onclick="event.stopPropagation();toast('${t.name} illustration (placeholder)')">${t.num}</div>
-      <div><h3 style="font-size:15px;margin:0 0 4px">${t.name}</h3><p style="font-size:12.5px">${t.desc}</p>
-      ${t.sub?`<div class="stack mt8" style="gap:8px">${t.sub.map(s=>`<div class="ctx-row"><h5>${s[0]}</h5><p>${s[1]}</p></div>`).join("")}</div>`:''}
-      <div class="cta mt8"><a class="btn sm">Open page →</a></div></div></div>
-    </div>`).join("")}</div>
-  </section>
-
-
 `);
 
 screens.type=(p)=>{const t=typeById(p.id)||TYPES[0];
