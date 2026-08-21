@@ -300,6 +300,19 @@ select.wf-in{cursor:pointer}
   border-radius:9px;padding:6px 11px;font-size:12.5px;font-weight:600;color:var(--ink);box-shadow:0 5px 14px -5px rgba(0,0,0,.35);cursor:pointer;white-space:nowrap}
 .lpin .pico{width:16px;height:16px;display:inline-grid;place-items:center;font-size:13px}
 .lpin small{display:block;font-weight:400;color:var(--ink-3);font-size:10.5px;text-transform:none;letter-spacing:0}
+/* hover card revealed from each landscape pin */
+.lpin:hover{z-index:40}
+.lpin-card{position:absolute;width:320px;max-width:80vw;background:#fff;border:1px solid var(--line-2);border-radius:12px;box-shadow:0 18px 44px -18px rgba(0,0,0,.5);padding:14px;display:none;z-index:30;white-space:normal;cursor:default;text-align:left}
+.lpin:hover .lpin-card{display:block}
+.lpin-card.down{top:calc(100% + 8px);left:0}
+.lpin-card.right{top:calc(100% + 8px);right:0;left:auto}
+.lpin-card.up{bottom:calc(100% + 8px);left:0}
+.lpin-card.center{left:50%;transform:translateX(-50%)}
+.lc-ill{display:grid;place-items:center;height:120px;border-radius:8px;background:var(--fill);border:1px solid var(--line-2);margin-bottom:10px;overflow:hidden}
+.lc-ill img{max-width:100%;max-height:100%;object-fit:contain}
+.lc-ill-ph{display:none;font-size:40px;color:var(--ink-3)}
+.lc-title{display:block;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:5px}
+.lc-desc{display:block;font-size:12.5px;line-height:1.55;color:var(--ink-2);font-weight:400;text-transform:none;letter-spacing:0}
 .sig-map{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--panel)}
 .sig-map-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line-2);font-size:13px;font-weight:600}
 .sig-map-top a{color:var(--ink-2);font-size:12px;font-weight:400;cursor:pointer;text-decoration:underline;white-space:nowrap}
@@ -880,11 +893,11 @@ screens.types=()=>shell("#/types",[{label:"Home",href:"#/home"},{label:"Types of
       <div class="lscape" style="min-height:560px">
         <img src="types-landscape.png" alt="Types of Commons — landscape illustration" onerror="this.style.display='none';document.getElementById('lscape-ph').style.display='flex';">
         <div id="lscape-ph" class="ph-img" style="display:none;position:absolute;inset:0;border:none;border-radius:0">Landscape illustration — drop the file here as <b>&nbsp;types-landscape.png</b></div>
-        <span class="lpin" style="top:7%;left:4%" onclick="go('#/type/forest')"><span class="pico">🌳</span>1. Forest Commons</span>
-        <span class="lpin" style="top:13%;right:4%" onclick="go('#/type/coastal')"><span class="pico">🌊</span>4. Coastal Commons</span>
-        <span class="lpin" style="top:52%;left:50%;transform:translateX(-50%)" onclick="go('#/type/water')"><span class="pico">💧</span>3. Water Commons</span>
-        <span class="lpin" style="bottom:20%;left:5%" onclick="go('#/type/pasture')"><span class="pico">🐄</span>2. Pasture Commons</span>
-        <span class="lpin" style="bottom:6%;left:46%;transform:translateX(-50%);white-space:normal;max-width:230px" onclick="go('#/type/cultural')"><span class="pico">🌿</span><span>5. Cultural Commons<small>(Oral Epics and Sacred Groves)</small></span></span>
+        <span class="lpin" style="top:7%;left:4%" onclick="go('#/type/forest')"><span class="pico">🌳</span>1. Forest Commons<span class="lpin-card down"><span class="lc-ill"><img src="type-forest.png" alt="Forest Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">🌳</span></span><b class="lc-title">1. Forest Commons</b><span class="lc-desc">The collective use and management of forest resources by local communities, based on the principle of shared governance — shared rights and responsibilities to access, use and manage forest resources.</span></span></span>
+        <span class="lpin" style="top:13%;right:4%" onclick="go('#/type/coastal')"><span class="pico">🌊</span>4. Coastal Commons<span class="lpin-card right"><span class="lc-ill"><img src="type-coastal.png" alt="Coastal Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">🌊</span></span><b class="lc-title">4. Coastal Commons</b><span class="lc-desc">Diverse interacting resource systems — mangroves, beaches, estuaries and reefs — that support a variety of life forms and local livelihoods.</span></span></span>
+        <span class="lpin" style="top:52%;left:50%;transform:translateX(-50%)" onclick="go('#/type/water')"><span class="pico">💧</span>3. Water Commons<span class="lpin-card up center"><span class="lc-ill"><img src="type-water.png" alt="Water Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">💧</span></span><b class="lc-title">3. Water Commons</b><span class="lc-desc">All the surface, sub-surface and groundwater resources that are available for all people and ecosystems, at present and in future.</span></span></span>
+        <span class="lpin" style="bottom:20%;left:5%" onclick="go('#/type/pasture')"><span class="pico">🐄</span>2. Pasture Commons<span class="lpin-card up"><span class="lc-ill"><img src="type-pasture.png" alt="Pasture Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">🐄</span></span><b class="lc-title">2. Pasture Commons</b><span class="lc-desc">Village grazing lands designated for communal use by local communities for grazing livestock — a traditional system of shared resource management practised for centuries.</span></span></span>
+        <span class="lpin" style="bottom:6%;left:46%;transform:translateX(-50%);white-space:normal;max-width:230px" onclick="go('#/type/cultural')"><span class="pico">🌿</span><span>5. Cultural Commons<small>(Oral Epics and Sacred Groves)</small></span><span class="lpin-card up center"><span class="lc-ill"><img src="type-cultural.png" alt="Cultural Commons illustration" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="lc-ill-ph">🌿</span></span><b class="lc-title">5. Cultural Commons</b><span class="lc-desc">Cultures located in time and space, shared and expressed by socially cohesive communities — from traditional knowledge to artistic movements; a system of intellectual resources available in a given area.</span></span></span>
       </div>
     </div>
   </section>
