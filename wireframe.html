@@ -116,6 +116,19 @@ main{min-height:60vh;padding-bottom:40px}
 .profilew.open .pw-cv{transform:rotate(180deg)}
 .profilew-menu{position:absolute;right:0;top:calc(100% + 8px);width:232px;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 16px 40px -12px rgba(30,30,30,.4);padding:6px;display:none;z-index:60}
 .profilew.open .profilew-menu{display:block}
+/* apps launcher */
+.appsw{position:relative;display:inline-flex}
+.appsw-menu{position:absolute;right:0;top:calc(100% + 10px);width:440px;max-width:92vw;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 20px 48px -14px rgba(30,30,30,.45);padding:18px 18px 20px;display:none;z-index:60}
+.appsw.open .appsw-menu{display:block}
+.appsw-cols{display:grid;grid-template-columns:2fr 1fr;gap:22px}
+.appsw-h{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:12px}
+.app-grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px 6px}
+.app-grid1{display:grid;grid-template-columns:1fr;gap:14px}
+.app-tile{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 4px;border-radius:10px;cursor:pointer;text-align:center;border:1px solid transparent}
+.app-tile:hover{background:var(--fill)}
+.app-ic{width:48px;height:48px;border-radius:13px;background:var(--fill);border:1px solid var(--line-2);display:grid;place-items:center;font-size:21px}
+.app-nm{font-size:12px;font-weight:600;color:var(--ink)}
+@media(max-width:560px){.appsw-cols{grid-template-columns:1fr}}
 /* account pages: left-side nav */
 .acct-nav{display:flex;flex-direction:column;gap:4px;position:sticky;top:88px}
 .acct-nav .acct-h{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:0 12px 8px}
@@ -665,6 +678,20 @@ const NAV=[
   {id:"#/significance",label:"Significance of Commons"},{id:"#/commoning",label:"Commoning"},
   {id:"#/contribute",label:"Contribute"}
 ];
+function appsMenu(){
+  const grid=`<svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3" cy="3" r="1.5"/><circle cx="8" cy="3" r="1.5"/><circle cx="13" cy="3" r="1.5"/><circle cx="3" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/><circle cx="3" cy="13" r="1.5"/><circle cx="8" cy="13" r="1.5"/><circle cx="13" cy="13" r="1.5"/></svg>`;
+  const products=[["Commons","👥","go('#/home')"],["VI Mapping","🗺","toast('VI Mapping (placeholder)')"],["GEET","⚡","toast('GEET (placeholder)')"],["CLART","🎓","toast('CLART (placeholder)')"],["CWB","📈","toast('CWB (placeholder)')"],["GWMT","💧","toast('GWMT (placeholder)')"]];
+  const quick=[["Form Builder","📋","toast('Form Builder (placeholder)')"],["CLM","📄","toast('CLM (placeholder)')"],["Data Platform","🗄","toast('Data Platform (placeholder)')"]];
+  const tile=a=>`<div class="app-tile" onclick="appsClose();${a[2]}"><div class="app-ic">${a[1]}</div><div class="app-nm">${a[0]}</div></div>`;
+  return `<div class="appsw" id="appsw"><button class="btn sm btn-icon" onclick="toggleAppsW(event)" title="Apps" aria-label="Apps">${grid}</button>
+    <div class="appsw-menu">
+      <div class="appsw-cols">
+        <div><div class="appsw-h">Products</div><div class="app-grid2">${products.map(tile).join("")}</div></div>
+        <div><div class="appsw-h">Quick access</div><div class="app-grid1">${quick.map(tile).join("")}</div></div>
+      </div>
+    </div>
+  </div>`;
+}
 function header(active){
   const visible=NAV.filter(n=> n.id==='#/admin'?roleCan('moderate') : true);
   let authArea;
@@ -681,7 +708,7 @@ function header(active){
     <div class="logo" onclick="go('#/home')">UNDERSTANDING<small>COMMONS · PLATFORM</small></div>
     <ul>${visible.map(n=>`<li><a class="navlink ${active===n.id?'active':''}" onclick="go('${n.id}')">${n.label}</a></li>`).join("")}</ul>
     <a class="btn sm btn-icon" onclick="openSearch()" title="Search" aria-label="Search">🔍</a>
-    <a class="btn sm btn-icon" onclick="toast('App launcher — Commons · VI Mapping · Form Builder · … (placeholder)')" title="Apps" aria-label="Apps"><svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3" cy="3" r="1.5"/><circle cx="8" cy="3" r="1.5"/><circle cx="13" cy="3" r="1.5"/><circle cx="3" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/><circle cx="3" cy="13" r="1.5"/><circle cx="8" cy="13" r="1.5"/><circle cx="13" cy="13" r="1.5"/></svg></a>
+    ${appsMenu()}
     ${authArea}
   </nav></div></header>`;
 }
@@ -1480,9 +1507,12 @@ function useMyLocation(){
 }
 
 /* ============ HELPERS ============ */
-function toggleProfileW(e){e.stopPropagation();const p=document.getElementById('profilew');if(p)p.classList.toggle('open');}
+function toggleProfileW(e){e.stopPropagation();appsClose();const p=document.getElementById('profilew');if(p)p.classList.toggle('open');}
 function pwClose(){const p=document.getElementById('profilew');if(p)p.classList.remove('open');}
 document.addEventListener('click',pwClose);
+function toggleAppsW(e){e.stopPropagation();pwClose();const p=document.getElementById('appsw');if(p)p.classList.toggle('open');}
+function appsClose(){const p=document.getElementById('appsw');if(p)p.classList.remove('open');}
+document.addEventListener('click',appsClose);
 document.addEventListener('click',function(){const d=document.getElementById('loginRoleDD');if(d)d.classList.remove('open');});
 function toggleReveal(id){const el=document.getElementById(id);if(el)el.classList.toggle("hidden");}
 /* Significance: swap the thematic map + content when a theme tab is clicked */
