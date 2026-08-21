@@ -636,7 +636,7 @@ const SIG_STATES=["Andhra Pradesh","Gujarat","Kerala","Madhya Pradesh","Meghalay
 const NAV=[
   {id:"#/home",label:"Home"},{id:"#/what",label:"What are Commons"},{id:"#/types",label:"Types of Commons"},
   {id:"#/significance",label:"Significance of Commons"},{id:"#/commoning",label:"Commoning"},
-  {id:"#/library",label:"Resources"},{id:"#/contribute",label:"Contribute"}
+  {id:"#/contribute",label:"Contribute"}
 ];
 function header(active){
   const visible=NAV.filter(n=> n.id==='#/admin'?roleCan('moderate') : true);
