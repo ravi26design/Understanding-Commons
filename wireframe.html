@@ -913,7 +913,7 @@ screens.types=()=>shell("#/types",[{label:"Home",href:"#/home"},{label:"Types of
           </div>
         </div>
         <div class="sig-map" style="margin:0">
-          <div class="sig-map-top"><span id="type-map-title">${TYPES[0].name} — local names & distribution</span><a onclick="toast('Open map at full size (placeholder)')">Full size →</a></div>
+          <div class="sig-map-top"><span id="type-map-title">${TYPES[0].name} — local names & distribution</span></div>
           <div class="sig-map-canvas lscape" style="min-height:340px;background:#fff">
             <span class="sig-hero-badge" id="type-map-badge">Showing: ${TYPES[0].name}</span>
             <img id="type-map-img" src="${TYPES[0].id}-commons-map.png" alt="India map — commons distribution" onerror="this.style.display='none';document.getElementById('type-map-ph').style.display='flex';">
